@@ -8,7 +8,7 @@ No Google Client Secret is required on the backend or frontend for this flow.
 1. Create (or select) an OAuth 2.0 Client ID of type **Web application**.
 2. Authorized JavaScript origins:
    - `http://localhost:5173`
-   - `https://thyrot1.chinthakajayaweera1.workers.dev`
+   - `https://thyrocare.example.com`
 3. Copy the **Client ID** only (never commit it).
 
 ## Render (backend)

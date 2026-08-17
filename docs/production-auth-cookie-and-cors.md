@@ -1,6 +1,6 @@
 # Production auth cookies and CORS
 
-Frontend (current): `https://thyrot1.chinthakajayaweera1.workers.dev`  
+Frontend (current): `https://thyrocare.example.com`  
 Backend: separately hosted HTTPS API (not on Cloudflare static assets).
 
 Incorrect cookie/CORS settings often cause:
@@ -42,7 +42,7 @@ Example: Workers.dev frontend + API on another host.
 | `COOKIE_SECURE`   | `true` (**required** for `SameSite=None`)         |
 | `COOKIE_SAMESITE` | `none` (required for cross-site cookie send)      |
 | `COOKIE_DOMAIN`   | unset unless you control a shared parent domain   |
-| `ALLOWED_ORIGINS` | `https://thyrot1.chinthakajayaweera1.workers.dev` |
+| `ALLOWED_ORIGINS` | `https://thyrocare.example.com` |
 
 Do **not** set `SameSite=None` without `Secure=true`. Backend settings already reject `COOKIE_SAMESITE=none` when `COOKIE_SECURE` is false.
 

@@ -8,7 +8,7 @@ import urllib.error
 import urllib.request
 
 BASE = "https://thyro-t1.onrender.com"
-ORIGIN = "https://thyrot1.chinthakajayaweera1.workers.dev"
+ORIGIN = "https://thyrocare.example.com"
 FE = ORIGIN
 
 

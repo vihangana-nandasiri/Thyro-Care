@@ -100,7 +100,7 @@ Schema, safety rules (every branch), repository ownership/version/soft-delete, A
 
 ## Git push strategy
 
-Commit on `main`: `feat: implement symptom tracking and safety escalation`. Push to `https://github.com/jkchinthaka/thyro_t1.git`. Force-with-lease only if remote is obsolete unrelated history.
+Commit on `main`: `feat: implement symptom tracking and safety escalation`. Push to `https://github.com/vihangana-nandasiri/Thyro-Care.git`. Force-with-lease only if remote is obsolete unrelated history.
 
 ## Deferred Phase 11
 

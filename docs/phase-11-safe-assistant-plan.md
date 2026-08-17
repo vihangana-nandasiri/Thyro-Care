@@ -65,7 +65,7 @@ Preserve ChatPage design; wire sessions/messages/citations; safety redirect UX; 
 
 ## Git push strategy
 
-Commit on `main`: `feat: implement safe knowledge-grounded assistant`. Push to `https://github.com/jkchinthaka/thyro_t1.git`.
+Commit on `main`: `feat: implement safe knowledge-grounded assistant`. Push to `https://github.com/vihangana-nandasiri/Thyro-Care.git`.
 
 ## Deferred Phase 12
 

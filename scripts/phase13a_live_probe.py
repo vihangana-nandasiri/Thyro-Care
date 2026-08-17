@@ -7,7 +7,7 @@ import urllib.error
 import urllib.request
 
 BE = "https://thyro-t1.onrender.com"
-FE = "https://thyrot1.chinthakajayaweera1.workers.dev"
+FE = "https://thyrocare.example.com"
 ORIGIN = FE
 API = f"{BE}/api/v1"
 

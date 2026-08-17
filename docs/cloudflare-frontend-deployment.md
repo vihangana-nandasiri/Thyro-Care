@@ -4,9 +4,9 @@
 
 | Item                       | Value                                           |
 | -------------------------- | ----------------------------------------------- |
-| GitHub repository          | https://github.com/jkchinthaka/thyro_t1.git     |
+| GitHub repository          | https://github.com/vihangana-nandasiri/Thyro-Care.git     |
 | Worker name                | `thyrot1`                                       |
-| Production workers.dev URL | https://thyrot1.chinthakajayaweera1.workers.dev |
+| Production workers.dev URL | https://thyrocare.example.com |
 | Config file                | `wrangler.jsonc` (committed)                    |
 | Wrangler version           | `4.110.0` (devDependency)                       |
 

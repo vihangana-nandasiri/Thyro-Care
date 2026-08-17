@@ -133,7 +133,7 @@ Metadata: actor id, document/version ids, statuses, field names, content hash, i
 ## 13. Git push strategy
 
 - Commit: `feat: implement knowledge governance and medical review`
-- Push to `https://github.com/jkchinthaka/thyro_t1.git` on `main`
+- Push to `https://github.com/vihangana-nandasiri/Thyro-Care.git` on `main`
 - Secret/artifact scan before commit; no force push unless documented recovery case
 
 ---

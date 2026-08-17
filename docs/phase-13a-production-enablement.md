@@ -36,9 +36,9 @@ Google (only when Web Client ID exists):
 
 Expected non-secret values:
 `APP_ENVIRONMENT=production`, `DEBUG=false`,
-`ALLOWED_ORIGINS=https://thyrot1.chinthakajayaweera1.workers.dev`,
+`ALLOWED_ORIGINS=https://thyrocare.example.com`,
 `COOKIE_SECURE=true`, `COOKIE_SAMESITE=none`,
-`FRONTEND_PUBLIC_URL=https://thyrot1.chinthakajayaweera1.workers.dev`
+`FRONTEND_PUBLIC_URL=https://thyrocare.example.com`
 
 ### 3. Cloudflare Build variables
 
@@ -53,7 +53,7 @@ Clear build cache, rebuild from latest `main`, deploy.
 
 Authorized JavaScript origins:
 `http://localhost:5173`
-`https://thyrot1.chinthakajayaweera1.workers.dev`
+`https://thyrocare.example.com`
 
 ### 5. Controlled mailbox + Google test user
 

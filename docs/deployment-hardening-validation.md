@@ -18,7 +18,7 @@ Date: 2026-07-11
 | Wrangler version                        | **4.110.0**                                                    |
 | `npm run cf:dry-run`                    | PASS — read `dist`, no Vite, `--autoconfig=false`              |
 | `npm run cf:deploy`                     | PASS — Worker `thyrot1` uploaded                               |
-| Live URL                                | https://thyrot1.chinthakajayaweera1.workers.dev                |
+| Live URL                                | https://thyrocare.example.com                |
 | Single-build verification               | Deploy logs show asset upload only; no Vite during `cf:deploy` |
 
 ## Production API URL status

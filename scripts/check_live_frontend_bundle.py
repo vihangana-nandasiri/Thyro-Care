@@ -4,7 +4,7 @@ from __future__ import annotations
 import re
 import urllib.request
 
-FE = "https://thyrot1.chinthakajayaweera1.workers.dev"
+FE = "https://thyrocare.example.com"
 EXPECTED_API = "https://thyro-t1.onrender.com/api/v1"
 
 

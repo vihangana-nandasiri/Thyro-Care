@@ -3,7 +3,7 @@
 Date: 2026-07-11  
 Workspace: `Thyro-Care-t1`  
 Branch: `main` @ `023031e9`  
-Live frontend: `https://thyrot1.chinthakajayaweera1.workers.dev`  
+Live frontend: `https://thyrocare.example.com`  
 Worker name: `thyrot1`
 
 ## Scope boundary
@@ -82,7 +82,7 @@ Cloudflare Workers static assets ≠ FastAPI. Backend requires a separate HTTPS 
 
 Document same-site vs cross-site vs local. Live frontend origin:
 
-`https://thyrot1.chinthakajayaweera1.workers.dev`
+`https://thyrocare.example.com`
 
 must be listed exactly in backend `ALLOWED_ORIGINS` when a backend is live. Cross-site cookies need `COOKIE_SECURE=true` and an appropriate `SameSite` (often `None` for cross-site) — do not blindly change code without final domain plan.
 

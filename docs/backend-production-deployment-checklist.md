@@ -4,7 +4,7 @@ Provider-neutral. **Do not deploy the FastAPI backend without valid provider cre
 
 Current static frontend origin (must be allowlisted exactly when the API is live):
 
-`https://thyrot1.chinthakajayaweera1.workers.dev`
+`https://thyrocare.example.com`
 
 ## Required configuration
 
@@ -43,7 +43,7 @@ See `docs/production-auth-cookie-and-cors.md` for SameSite / Secure combinations
 | ---------------------- | -------------------------------------------------- |
 | Backend URL            | `https://thyro-t1.onrender.com`                    |
 | Health                 | `GET /health`, `GET /api/v1/health`                |
-| Frontend origin (CORS) | `https://thyrot1.chinthakajayaweera1.workers.dev`  |
+| Frontend origin (CORS) | `https://thyrocare.example.com`  |
 | Root directory         | `backend`                                          |
 | Start command          | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
 

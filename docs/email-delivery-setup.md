@@ -23,7 +23,7 @@ SMTP_PASSWORD=<secret>
 SMTP_USE_TLS=true
 SMTP_FROM_EMAIL=<verified from address>
 SMTP_FROM_NAME=ThyroCare AI
-FRONTEND_PUBLIC_URL=https://thyrot1.chinthakajayaweera1.workers.dev
+FRONTEND_PUBLIC_URL=https://thyrocare.example.com
 ```
 
 Also enable the flows you need:
