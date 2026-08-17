@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+.env.production
+!.env.example
+!.env.production.example
+
+# Cloudflare Wrangler local state (config wrangler.jsonc is tracked)
+.wrangler/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Test / cache
+.cache/
+.turbo/
+.eslintcache
+.vite/
+
+# Python (future backend)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Vector / local AI stores (future)
+chroma_data/
+*.faiss
+*.index
+
+# Misc
+*.zip
+*.docx
+.DS_Store
+
+htmlcov/
+coverage.xml
+backend/.venv/
+
