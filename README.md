@@ -35,7 +35,7 @@ See [`docs/safe-assistant-architecture.md`](docs/safe-assistant-architecture.md)
 
 ### Cloudflare frontend deployment
 
-- Live static SPA: https://thyrot1.chinthakajayaweera1.workers.dev (Worker `thyrot1`)
+-  Live deployment: Not configured yet.
 - Committed config: `wrangler.jsonc`; Wrangler pinned as `devDependency`
 - Build: `npm run ci:build` · Deploy: `npm run cf:deploy` (no second Vite build)
 - **Does not deploy FastAPI** — see [`docs/cloudflare-frontend-deployment.md`](docs/cloudflare-frontend-deployment.md) and [`docs/backend-production-deployment-checklist.md`](docs/backend-production-deployment-checklist.md)
