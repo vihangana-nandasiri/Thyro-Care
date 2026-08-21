@@ -55,9 +55,9 @@ export const mockLandingFeatures = [
 ];
 
 export const mockLandingStats = [
-  ["2,400+", "Patients Supported"],
-  ["98%", "Satisfaction Rate"],
-  ["24/7", "AI Availability"],
+["Demo", "Research Prototype"],
+["3", "User Roles"],
+["Web", "Responsive Platform"],
 ] as const;
 
 export const mockDashboardCards: {
@@ -154,11 +154,11 @@ export const mockEmergencyCallOptions = [
   { label: "Call 1990", sub: "Suwa Seriya Ambulance", icon: Phone, color: "#DC2626" },
   {
     label: "Call Hospital",
-    sub: "Seattle Medical Center\n+1 (206) 555-0101",
+    sub: "Nearest hospital emergency department",
     icon: Stethoscope,
     color: "#B91C1C",
   },
-  { label: "Call Doctor", sub: "Dr. Emily Chen\n+1 (206) 555-0202", icon: User, color: "#991B1B" },
+  { label: "Call Doctor", sub: "Your healthcare provider", icon: User, color: "#991B1B" },
 ];
 
 export const mockEmergencyWarningSigns = [

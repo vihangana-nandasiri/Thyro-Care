@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User, Star } from "lucide-react";
+import { User } from "lucide-react";
 import { Btn, Input, BrandLogo } from "@/components/common";
 import { GoogleSignInButton } from "@/components/auth";
 import { BLUE, TEAL } from "@/constants/colors";
@@ -249,16 +249,12 @@ src="/bps1.jpeg"
               className="text-2xl font-bold mb-2"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              &ldquo;ThyroCare AI transformed my recovery experience completely.&rdquo;
+             &ldquo;Explore educational guidance and recovery support tools in one place.&rdquo;
             </p>
             <p className="opacity-80 text-sm">
-              — Sarah M., Thyroid Cancer Survivor, 18 months post-surgery
+              — Sample message for demonstration only
             </p>
-            <div className="flex gap-1 mt-3" aria-label="5 out of 5 stars">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star key={i} className="w-4 h-4 fill-current text-yellow-300" aria-hidden="true" />
-              ))}
-            </div>
+            
           </div>
         </div>
       </div>
