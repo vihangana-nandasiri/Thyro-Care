@@ -13,7 +13,7 @@ from app.models.enums import ChatResponseMode
 
 _EMERGENCY_HINTS = (
     r"\b(emergency|can't breathe|cannot breathe|chest pain|suicid|overdose|"
-    r"unconscious|severe bleeding|call 911|heart attack|stroke)\b",
+    r"unconscious|severe bleeding|call 1990|heart attack|stroke)\b",
 )
 
 _DOSAGE_HINTS = (

@@ -37,7 +37,7 @@ export function EmergencyPage() {
               </h1>
             </div>
             <p className="text-sm text-red-200 mt-0.5">
-              If you are in immediate danger, call 911 now
+              For a medical emergency in Sri Lanka, call 1990 Suwa Seriya now.
             </p>
           </div>
           <div className="animate-pulse w-3 h-3 bg-red-300 rounded-full" />

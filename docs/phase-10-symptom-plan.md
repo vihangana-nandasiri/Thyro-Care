@@ -49,7 +49,7 @@ Legacy `symptom_logs` / `SymptomGuidanceLevel` remain foundation artifacts; Phas
 
 ## Approved-content boundary
 
-- Emergency page: preserve existing design and “call 911” messaging; do not invent new country numbers.
+- Emergency page: preserve the existing design and use Sri Lanka's official 1990 Suwa Seriya ambulance guidance.
 - Safety question wording aligned with existing Emergency warning themes (breathing, chest discomfort, neck swelling, swallowing, bleeding, confusion, rapid worsening).
 - Content marked **REVIEW_REQUIRED** in `docs/symptom-safety-content-review.md` until medical-expert sign-off.
 - Routine wording must never claim the user is “safe.”

@@ -204,8 +204,7 @@ export function LandingPage() {
           <Shield className="w-3.5 h-3.5 inline mr-1" />
           <strong>Medical Disclaimer:</strong> ThyroCare AI provides informational support only and
           is not a substitute for professional medical advice, diagnosis, or treatment. Always
-          consult your healthcare provider for medical decisions. In case of emergency, call 911 or
-          your local emergency services immediately.
+          consult your healthcare provider for medical decisions. For a medical emergency in Sri Lanka, call 1990 Suwa Seriya or go to the nearest emergency department.
         </p>
       </footer>
     </div>

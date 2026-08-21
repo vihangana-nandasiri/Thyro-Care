@@ -151,7 +151,7 @@ export const mockDashboardQuickStats = [
 ];
 
 export const mockEmergencyCallOptions = [
-  { label: "Call 911", sub: "Emergency Services", icon: Phone, color: "#DC2626" },
+  { label: "Call 1990", sub: "Suwa Seriya Ambulance", icon: Phone, color: "#DC2626" },
   {
     label: "Call Hospital",
     sub: "Seattle Medical Center\n+1 (206) 555-0101",
