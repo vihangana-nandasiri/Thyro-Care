@@ -10,7 +10,7 @@ export function ChatSafetyBanner() {
       <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
       <span className="text-xs text-red-700 flex-1">
         <strong>Emergency:</strong> If experiencing chest pain, severe breathing difficulty, or high
-        fever — call 911 immediately or visit your nearest ER.
+        fever — For a medical emergency in Sri Lanka, call 1990 Suwa Seriya or go to the nearest emergency department.
       </span>
       <button
         onClick={() => navigate(ROUTES.EMERGENCY)}

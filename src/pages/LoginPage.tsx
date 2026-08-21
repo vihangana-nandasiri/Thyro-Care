@@ -236,7 +236,7 @@ export function LoginPage() {
 
         <div className="hidden lg:block relative overflow-hidden rounded-l-3xl m-4">
           <img
-            src="https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe?w=800&h=900&fit=crop&auto=format"
+src="/bps1.jpeg"
             alt="Healthcare and recovery"
             className="w-full h-full object-cover"
           />
