@@ -23,9 +23,6 @@ export function TermsPage() {
         >
           Terms of Service
         </h1>
-        <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-6">
-          Placeholder content — requires organizational/legal review before production use.
-        </p>
         <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
           <p>
             By creating an account or using ThyroCare AI, you agree to use the service lawfully,

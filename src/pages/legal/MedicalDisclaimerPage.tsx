@@ -24,7 +24,7 @@ export function MedicalDisclaimerPage() {
           Medical disclaimer
         </h1>
         <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-6">
-          Placeholder content — requires organizational/legal review before production use.
+          Placeholder content — Academic prototype only — not clinically validated and not intended for diagnosis, treatment, or real-world medical use.
         </p>
         <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
           <p>
