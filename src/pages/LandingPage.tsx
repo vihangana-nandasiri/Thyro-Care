@@ -102,7 +102,7 @@ export function LandingPage() {
               <div>
                 <p className="text-xs font-semibold text-foreground">ThyroCare AI</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-  Demo preview: Personalized reminders will appear here after sign in.
+  Personalized reminders will appear here after sign in.
 </p>
               </div>
             </div>
