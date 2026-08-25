@@ -3,7 +3,7 @@ import { Phone, ArrowRight, MessageCircle, Shield } from "lucide-react";
 import { Card, Badge, Btn, BrandLogo } from "@/components/common";
 import { BLUE, TEAL } from "@/constants/colors";
 import { ROUTES } from "@/constants/routes";
-import { mockLandingFeatures, mockLandingStats } from "@/data/mock";
+import { mockLandingFeatures } from "@/data/mock";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { env } from "@/config/env";
 
@@ -77,20 +77,11 @@ export function LandingPage() {
               Try AI Chat Free
             </Btn>
           </div>
-          <div className="flex items-center gap-6 pt-2">
-            {mockLandingStats.map(([val, label]) => (
-              <div key={label}>
-                <div
-                  className="text-2xl font-extrabold text-foreground"
-                  style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-                >
-                  {val}
-                </div>
-                <div className="text-xs text-muted-foreground">{label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+          
+                    </div>
+      
+
+        
         <div className="relative">
           <div className="rounded-3xl overflow-hidden shadow-2xl border border-border">
             <img
