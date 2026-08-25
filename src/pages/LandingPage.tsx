@@ -102,8 +102,8 @@ export function LandingPage() {
               <div>
                 <p className="text-xs font-semibold text-foreground">ThyroCare AI</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Your Levothyroxine reminder: Take 100mcg with water 30 min before breakfast. ✓
-                </p>
+  Demo preview: Personalized reminders will appear here after sign in.
+</p>
               </div>
             </div>
           </div>
@@ -121,7 +121,7 @@ export function LandingPage() {
 
       {/* Features */}
       <section className="max-w-6xl mx-auto px-6 py-16">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12">Your Levothyroxine reminder
           <h2
             className="text-3xl font-bold text-foreground mb-3"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
