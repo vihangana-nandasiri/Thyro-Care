@@ -9,8 +9,7 @@ export const mockUser = {
   location: "Seattle, WA",
   language: "English",
   emergencyContact: "Michael Johnson (Spouse)",
-  avatarUrl:
-    "https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=100&h=100&fit=crop&face",
+  avatarUrl: "",
   badges: [
     { label: "DTC Patient", color: "blue" as const },
     { label: "9 months post-op", color: "teal" as const },

@@ -85,7 +85,7 @@ export function LandingPage() {
         <div className="relative">
           <div className="rounded-3xl overflow-hidden shadow-2xl border border-border">
             <img
-              src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=500&fit=crop&auto=format"
+              src="/bps1.jpeg"
               alt="Healthcare professional supporting patient"
               className="w-full h-80 object-cover"
             />
