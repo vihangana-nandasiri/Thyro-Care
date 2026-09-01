@@ -387,7 +387,7 @@ export function MedicationPage() {
               className="font-bold text-foreground mb-4"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Adherence Rate
+              Medication Progress
             </h3>
             <div
               className="text-4xl font-extrabold mb-1"
