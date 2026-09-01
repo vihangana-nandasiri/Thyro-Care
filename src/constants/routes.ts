@@ -86,7 +86,7 @@ export const SCREEN_PATH: Record<string, string> = {
 
 /** TopBar / DashboardLayout titles keyed by pathname. */
 export const ROUTE_TITLES: Record<string, string> = {
-  [ROUTES.DASHBOARD]: "Good morning, Sarah 👋",
+  [ROUTES.DASHBOARD]: "Dashboard",
   [ROUTES.CHAT]: "AI Health Assistant",
   [ROUTES.MEDICATIONS]: "Medication Management",
   [ROUTES.DIET]: "Low-Iodine Diet Guide",

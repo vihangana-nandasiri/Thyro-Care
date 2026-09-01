@@ -121,7 +121,7 @@ export function LandingPage() {
 
       {/* Features */}
       <section className="max-w-6xl mx-auto px-6 py-16">
-        <div className="text-center mb-12">Your Levothyroxine reminder
+        <div className="text-center mb-12">
           <h2
             className="text-3xl font-bold text-foreground mb-3"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}

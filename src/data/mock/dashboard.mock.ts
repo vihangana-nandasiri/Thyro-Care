@@ -145,7 +145,7 @@ export const mockDashboardCards: {
 
 export const mockDashboardQuickStats = [
   { label: "Health Score", value: "87", unit: "/100", color: GREEN, icon: Heart },
-  { label: "Medication Adherence", value: "94%", color: BLUE, icon: Pill },
+  { label: "Medical Progress", value: "94%", color: BLUE, icon: Pill },
   { label: "Days Post-Surgery", value: "271", color: TEAL, icon: Calendar },
   { label: "Chats This Week", value: "12", color: AMBER, icon: MessageCircle },
 ];

@@ -13,6 +13,7 @@ import {
 import { Card, Badge } from "@/components/common";
 import { BLUE, GRAY } from "@/constants/colors";
 import { SCREEN_PATH } from "@/constants/routes";
+import { useAuth } from "@/context/AuthContext";
 import {
   mockDashboardCards,
   mockDashboardQuickStats,
@@ -25,6 +26,7 @@ import { useAppointments } from "@/hooks/useAppointments";
 import { useSymptoms } from "@/hooks/useSymptoms";
 
 export function DashboardPage() {
+    const { user } = useAuth();
   useDocumentTitle("Dashboard");
   const navigate = useNavigate();
   const { todaySchedule, adherence, loading: medLoading } = useMedications();
@@ -34,12 +36,12 @@ export function DashboardPage() {
 
   const quickStats = useMemo(() => {
     return mockDashboardQuickStats.map((s) => {
-      if (s.label !== "Medication Adherence") return s;
+      if (s.label !== "Medical Progress") return s;
       if (medLoading) return { ...s, value: "…" };
       const pct = adherence?.adherence_percentage;
       return {
         ...s,
-        value: pct === null || pct === undefined ? "—" : `${Math.round(pct)}%`,
+       value: pct === null || pct === undefined ? "No data" : `${Math.round(pct)}%`,
       };
     });
   }, [adherence, medLoading]);
@@ -162,7 +164,7 @@ export function DashboardPage() {
               >
                 {c.label}
               </div>
-              <div className="text-sm text-muted-foreground mt-0.5">{c.value}</div>
+              <div className="text-sm text-muted-foreground mt-0.5">{c.id === "profile" ? (user?.full_name ?? "Account") : c.value}</div>
               <div className="text-xs text-muted-foreground">{c.sub}</div>
             </button>
           );
