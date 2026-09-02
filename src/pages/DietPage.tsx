@@ -30,7 +30,7 @@ export function DietPage() {
             >
               Day {mockDietStatus.day} of {mockDietStatus.totalDays}
             </h2>
-            <p className="opacity-80 text-sm mt-1">{mockDietStatus.subtitle}</p>
+            <p className="opacity-80 text-sm mt-1">Follow the schedule and instructions provided by your healthcare team.</p>
           </div>
           <div className="text-right">
             <div
@@ -39,7 +39,7 @@ export function DietPage() {
             >
               {mockDietStatus.adherencePct}%
             </div>
-            <div className="text-sm opacity-80">Diet adherence today</div>
+            <div className="text-sm opacity-80">Diet progress today</div>
             <div className="mt-2 bg-white/20 rounded-full h-2 w-32 ml-auto">
               <div
                 className="bg-white rounded-full h-2"
