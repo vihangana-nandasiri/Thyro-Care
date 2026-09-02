@@ -48,7 +48,7 @@ export function ResourcesPage() {
               <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
                 <Clock className="w-3.5 h-3.5" />
                 <span>{a.time}</span>
-                <span className="ml-auto text-primary font-semibold">Read →</span>
+                <a href={a.url} target="_blank" rel="noopener noreferrer" className="ml-auto text-primary font-semibold">Read →</a>
               </div>
             </Card>
           ))}
@@ -64,7 +64,10 @@ export function ResourcesPage() {
             >
               <div className="relative">
                 <img src={v.thumbnail} alt={v.title} className="w-full h-40 object-cover" />
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/40 transition">
+                <div
+  onClick={() => window.open(v.url, "_blank", "noopener,noreferrer")}
+  className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/40 transition-colors"
+>
                   <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
                     <Play className="w-5 h-5 text-primary fill-current ml-0.5" />
                   </div>
