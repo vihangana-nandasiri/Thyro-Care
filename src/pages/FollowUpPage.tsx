@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, CheckCircle, Calendar, AlertTriangle, X } from "lucide-react";
 import { Card, Badge, Btn, Input, LoadingState, ErrorState } from "@/components/common";
 import { BLUE, TEAL } from "@/constants/colors";
-import { mockTshHistory } from "@/data/mock";
+
 import {
   appointmentFormSchema,
   type AppointmentFormSchemaValues,
@@ -466,22 +466,10 @@ export function FollowUpPage() {
               TSH History
             </h3>
             <div className="space-y-2 text-sm">
-              {mockTshHistory.map((t) => (
-                <div key={t.date} className="flex items-center justify-between gap-2 flex-wrap">
-                  <span className="text-muted-foreground">{t.date}</span>
-                  <span className="font-bold text-foreground">
-                    {t.value} <span className="text-xs font-normal">mIU/L</span>
-                  </span>
-                  <Badge
-                    color={
-                      t.status === "optimal" ? "green" : t.status === "normal" ? "blue" : "red"
-                    }
-                  >
-                    {t.status}
-                  </Badge>
-                </div>
-              ))}
-            </div>
+  <p className="text-muted-foreground">
+    No lab results recorded.
+  </p>
+</div>
           </Card>
         </div>
       </div>
