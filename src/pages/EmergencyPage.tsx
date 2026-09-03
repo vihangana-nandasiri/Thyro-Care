@@ -1,13 +1,9 @@
 import { useNavigate } from "react-router";
-import { AlertTriangle, Phone, ChevronLeft, MessageCircle, Shield } from "lucide-react";
-import { Avatar } from "@/components/common";
+import { AlertTriangle, Phone, ChevronLeft, Shield } from "lucide-react";
+
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/context/AuthContext";
-import {
-  mockEmergencyCallOptions,
-  mockEmergencyWarningSigns,
-  mockEmergencyContacts,
-} from "@/data/mock";
+import { mockEmergencyWarningSigns } from "@/data/mock";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export function EmergencyPage() {
@@ -45,32 +41,25 @@ export function EmergencyPage() {
       </div>
 
       <div className="max-w-3xl mx-auto px-6 py-8 space-y-5">
-        {/* Emergency call buttons */}
-        <div className="grid sm:grid-cols-3 gap-4">
-          {mockEmergencyCallOptions.map((c) => {
-            const Icon = c.icon;
-            return (
-              <button
-                key={c.label}
-                className="flex flex-col items-center gap-3 p-6 rounded-2xl text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer border-2 border-white/20"
-                style={{ background: c.color }}
-              >
-                <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center">
-                  <Icon className="w-7 h-7" />
-                </div>
-                <div className="text-center">
-                  <div
-                    className="text-lg font-bold"
-                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-                  >
-                    {c.label}
-                  </div>
-                  <div className="text-xs opacity-80 whitespace-pre-line mt-0.5">{c.sub}</div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
+        {/* Emergency ambulance call */}
+<a
+  href="tel:1990"
+  aria-label="Call 1990 Suwa Seriya"
+  className="flex items-center justify-center gap-3 p-6 rounded-2xl bg-red-600 text-white shadow-lg hover:bg-red-700 transition-colors"
+>
+  <Phone className="w-7 h-7" />
+  <div className="text-center">
+    <div
+      className="text-lg font-bold"
+      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+    >
+      Call 1990 Suwa Seriya
+    </div>
+    <div className="text-xs opacity-90 mt-0.5">
+      Sri Lanka emergency ambulance service
+    </div>
+  </div>
+</a>
 
         {/* Warning signs */}
         <div className="bg-white rounded-2xl border border-red-200 p-5 shadow-sm">
@@ -90,27 +79,7 @@ export function EmergencyPage() {
           </div>
         </div>
 
-        {/* AI Emergency Guidance */}
-        <div className="bg-white rounded-2xl border border-orange-200 p-5 shadow-sm">
-          <h2
-            className="font-bold text-foreground mb-3 flex items-center gap-2"
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-          >
-            <MessageCircle className="w-5 h-5 text-orange-500" /> AI Emergency Guidance
-          </h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Describe your symptoms and get immediate AI guidance while you wait for help.
-          </p>
-          <div className="flex gap-2">
-            <input
-              placeholder="Describe your emergency symptoms..."
-              className="flex-1 rounded-xl border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
-            />
-            <button className="px-4 py-3 bg-red-600 text-white rounded-xl font-semibold text-sm hover:bg-red-700 transition cursor-pointer">
-              Get Help
-            </button>
-          </div>
-        </div>
+
 
         {/* Emergency contacts */}
         <div className="bg-white rounded-2xl border border-border p-5 shadow-sm">
@@ -120,32 +89,19 @@ export function EmergencyPage() {
           >
             Personal Emergency Contacts
           </h2>
-          <div className="space-y-3">
-            {mockEmergencyContacts.map((c) => (
-              <div
-                key={c.name}
-                className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-border"
-              >
-                <Avatar name={c.name} size={10} />
-                <div className="flex-1">
-                  <div className="font-semibold text-sm text-foreground">{c.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {c.relation} · {c.phone}
-                  </div>
-                </div>
-                <button className="flex items-center gap-1.5 px-3 py-2 bg-green-500 text-white rounded-xl text-xs font-bold hover:bg-green-600 transition cursor-pointer">
-                  <Phone className="w-3.5 h-3.5" /> Call
-                </button>
-              </div>
-            ))}
-          </div>
+          <div className="rounded-xl bg-gray-50 border border-border p-4 text-center">
+  <p className="font-semibold text-sm text-foreground">
+    No personal emergency contacts available
+  </p>
+  <p className="text-xs text-muted-foreground mt-1">
+    Use the emergency ambulance call option above.
+  </p>
+</div>
         </div>
 
         <p className="text-center text-xs text-muted-foreground">
           <Shield className="w-3.5 h-3.5 inline mr-1" />
-          ThyroCare AI emergency guidance is supplemental only. This application cannot contact
-          emergency services for you. Always call emergency services for life-threatening
-          situations. This is not a diagnosis.
+          This application cannot contact emergency services for you. For a medical emergency in Sri Lanka, call 1990 Suwa Seriya immediately. This is not a diagnosis.
         </p>
       </div>
     </div>

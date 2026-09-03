@@ -9,8 +9,6 @@ import {
   BookOpen,
   User,
   Heart,
-  Phone,
-  Stethoscope,
 } from "lucide-react";
 import { BLUE, TEAL, GREEN, AMBER, RED, GRAY } from "@/constants/colors";
 import type { Screen } from "@/types";
@@ -150,16 +148,7 @@ export const mockDashboardQuickStats = [
   { label: "Chats This Week", value: "12", color: AMBER, icon: MessageCircle },
 ];
 
-export const mockEmergencyCallOptions = [
-  { label: "Call 1990", sub: "Suwa Seriya Ambulance", icon: Phone, color: "#DC2626" },
-  {
-    label: "Call Hospital",
-    sub: "Nearest hospital emergency department",
-    icon: Stethoscope,
-    color: "#B91C1C",
-  },
-  { label: "Call Doctor", sub: "Your healthcare provider", icon: User, color: "#991B1B" },
-];
+
 
 export const mockEmergencyWarningSigns = [
   "Chest pain or pressure",
@@ -170,10 +159,4 @@ export const mockEmergencyWarningSigns = [
   "Sudden severe dizziness or fainting",
   "Signs of hypocalcemia (muscle spasms, tingling)",
   "Wound infection or excessive bleeding",
-];
-
-export const mockEmergencyContacts = [
-  { name: "Michael Johnson", relation: "Spouse", phone: "+1 (555) 234-0001" },
-  { name: "Dr. Emily Chen", relation: "Endocrinologist", phone: "+1 (206) 555-0202" },
-  { name: "Anna Johnson", relation: "Sister", phone: "+1 (555) 234-0003" },
 ];

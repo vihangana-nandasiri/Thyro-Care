@@ -1,5 +1,5 @@
 ﻿/** Demo / mock datasets only — not production clinical data. */
-export { mockUser } from "./user.mock";
+
 export { mockTshHistory } from "./appointments.mock";
 export {
   mockWeeklyHealthData,
@@ -17,7 +17,5 @@ export {
   mockLandingStats,
   mockDashboardCards,
   mockDashboardQuickStats,
-  mockEmergencyCallOptions,
   mockEmergencyWarningSigns,
-  mockEmergencyContacts,
 } from "./dashboard.mock";
