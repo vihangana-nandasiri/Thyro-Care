@@ -125,6 +125,10 @@ def get_llm_provider(
         return DisabledLLMProvider()
     if name == "fake":
         return FakeLLMProvider()
+    if name == "gemini":
+        from app.services.gemini_provider import GeminiProvider
+
+    return GeminiProvider(cfg)
     if name == "openai":
         from app.services.openai_responses_provider import OpenAIResponsesProvider
 
