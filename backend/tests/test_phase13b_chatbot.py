@@ -2,14 +2,22 @@
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import pytest
 from app.content.multilingual_messages import detect_dominant_language
-from app.core.config import get_settings
+from app.core.config import Settings, get_settings
 from app.models.chat import ChatMessageDocument
-from app.models.enums import ChatMessageRole, KnowledgeStatus
+from app.models.enums import (
+    ChatMessageRole,
+    EvidenceCoverage,
+    KnowledgeStatus,
+    StructuredResponseCategory,
+)
 from app.models.knowledge import KnowledgeChunkDocument
 from app.services.conversation_context import build_conversation_context
 from app.services.embedding_service import FakeEmbeddingProvider, cosine_similarity
+from app.services.gemini_provider import GeminiProvider
 from app.services.grounding_validation_service import (
     GroundingValidationService,
     RetrievedChunk,
@@ -57,6 +65,63 @@ async def test_fake_provider_cites_first_chunk() -> None:
     )
     assert answer.available is True
     assert answer.citation_ids == ["c1"]
+
+
+@pytest.mark.asyncio
+async def test_gemini_no_evidence_flag_off_returns_insufficient() -> None:
+    settings = Settings(
+        _env_file=None,
+        AI_GENERAL_EDUCATION_ENABLED=False,
+        LLM_API_KEY="test-key",
+        LLM_MODEL="test-model",
+    )
+    answer = await GeminiProvider(settings).generate_grounded_answer(
+        user_message="What is the thyroid?",
+        evidence=[],
+        max_output_tokens=128,
+    )
+    assert answer.response_category == StructuredResponseCategory.INSUFFICIENT_EVIDENCE
+    assert answer.evidence_coverage == EvidenceCoverage.INSUFFICIENT
+
+
+@pytest.mark.asyncio
+async def test_gemini_general_education_uses_empty_evidence_without_citations(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = Settings(
+        _env_file=None,
+        AI_GENERAL_EDUCATION_ENABLED=True,
+        LLM_API_KEY="test-key",
+        LLM_MODEL="test-model",
+    )
+    provider = GeminiProvider(settings)
+    captured: dict[str, object] = {}
+
+    class FakeModels:
+        async def generate_content(self, **kwargs: object) -> object:
+            captured.update(kwargs)
+            return SimpleNamespace(
+                parsed={
+                    "answer": "The thyroid is a gland in the neck.",
+                    "citation_ids": ["invented"],
+                    "response_category": "education",
+                    "evidence_coverage": "not_medically_reviewed",
+                    "follow_up_suggestions": [],
+                }
+            )
+
+    provider._client = SimpleNamespace(aio=SimpleNamespace(models=FakeModels()))
+    answer = await provider.generate_grounded_answer(
+        user_message="What is the thyroid?",
+        evidence=[],
+        max_output_tokens=128,
+    )
+
+    assert answer.available is True
+    assert answer.citation_ids == []
+    assert answer.evidence_coverage == EvidenceCoverage.NOT_MEDICALLY_REVIEWED
+    assert "GENERAL_EDUCATION_POLICY_TEXT" not in str(captured["config"])
+    assert "Approved evidence excerpts" not in str(captured["contents"])
 
 
 def test_unknown_provider_disabled() -> None:

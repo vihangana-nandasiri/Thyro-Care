@@ -131,6 +131,10 @@ class Settings(BaseSettings):
 
     # Phase 11 / 13B — safe assistant (default disabled)
     ai_assistant_enabled: bool = Field(default=False, alias="AI_ASSISTANT_ENABLED")
+    ai_general_education_enabled: bool = Field(
+        default=False,
+        alias="AI_GENERAL_EDUCATION_ENABLED",
+    )
     llm_provider: str = Field(default="disabled", alias="LLM_PROVIDER")
     llm_model: str = Field(default="", alias="LLM_MODEL")
     llm_api_key: str = Field(default="", alias="LLM_API_KEY")

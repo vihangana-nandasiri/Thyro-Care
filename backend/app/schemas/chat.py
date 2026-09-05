@@ -66,6 +66,7 @@ class ChatMessagePublic(BaseModel):
     role: ChatMessageRole
     content: str
     response_mode: ChatResponseMode | None = None
+    evidence_coverage: str | None = None
     citations: list[ChatCitationPublic] = Field(default_factory=list)
     safety_notice: str | None = None
     created_at: datetime

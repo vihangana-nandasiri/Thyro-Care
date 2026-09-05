@@ -18,7 +18,12 @@ from app.content.multilingual_messages import detect_dominant_language, localize
 from app.core.config import get_settings
 from app.core.exceptions import NotFoundException
 from app.models.chat import ChatMessageDocument, ChatSessionDocument
-from app.models.enums import ChatMessageRole, ChatResponseMode, ChatSessionStatus
+from app.models.enums import (
+    ChatMessageRole,
+    ChatResponseMode,
+    ChatSessionStatus,
+    StructuredResponseCategory,
+)
 from app.models.object_id import object_id_to_string
 from app.models.user import UserDocument
 from app.repositories.chat_repository import ChatMessageRepository, ChatSessionRepository
@@ -51,6 +56,7 @@ from app.services.prompt_security_service import PromptSecurityService, normaliz
 from app.utils.datetime import utc_now
 
 _NOT_FOUND = "This chat session is no longer available."
+_GENERAL_EDUCATION_PREFIX = "AI-generated general education — not medically reviewed."
 
 
 def _session_public(doc: ChatSessionDocument) -> ChatSessionPublic:
@@ -83,6 +89,7 @@ def _message_public(doc: ChatMessageDocument) -> ChatMessagePublic:
         role=doc.role,
         content=doc.content,
         response_mode=doc.response_mode,
+        evidence_coverage=doc.evidence_coverage,
         citations=_citations_from_stored(doc.source_citations),
         safety_notice=doc.safety_notice,
         created_at=doc.created_at,
@@ -299,7 +306,11 @@ class ChatService:
         chunks = await self.knowledge.list_approved_chunks(limit=500)
         evidence, retrieval_mode = await self.hybrid.retrieve(normalized, chunks)
 
-        if not evidence:
+        general_education_enabled = (
+            self.settings.ai_general_education_enabled
+            and self.provider.__class__.__name__ == "GeminiProvider"
+        )
+        if not evidence and not general_education_enabled:
             return await self._finalize(
                 user=user,
                 session=session,
@@ -356,6 +367,99 @@ class ChatService:
                 safety_notice=ASSISTANT_DISCLAIMER,
                 audit_action=AuditActions.CHAT_RESPONSE_GENERATED,
                 provider=answer.provider,
+                retrieval_mode=retrieval_mode,
+            )
+
+        if answer.response_category == StructuredResponseCategory.BOUNDARY:
+            return await self._finalize(
+                user=user,
+                session=session,
+                user_text=normalized,
+                assistant_text=answer.text,
+                mode=ChatResponseMode.POLICY_REFUSAL,
+                citations=[],
+                safety_notice=ASSISTANT_DISCLAIMER,
+                audit_action=AuditActions.CHAT_POLICY_REFUSAL,
+                provider=answer.provider,
+                model_name=answer.model_name,
+                retrieval_mode=retrieval_mode,
+            )
+
+        if answer.response_category == StructuredResponseCategory.INSUFFICIENT_EVIDENCE:
+            return await self._finalize(
+                user=user,
+                session=session,
+                user_text=normalized,
+                assistant_text=localized_message(
+                    "insufficient_evidence",
+                    language=language,
+                    english_fallback=INSUFFICIENT_EVIDENCE_MESSAGE,
+                ),
+                mode=ChatResponseMode.INSUFFICIENT_EVIDENCE,
+                citations=[],
+                safety_notice=ASSISTANT_DISCLAIMER,
+                audit_action=AuditActions.CHAT_INSUFFICIENT_EVIDENCE,
+                provider=answer.provider,
+                model_name=answer.model_name,
+                retrieval_mode=retrieval_mode,
+            )
+
+        if not evidence and general_education_enabled:
+            general_text = answer.text
+            if not general_text.startswith(_GENERAL_EDUCATION_PREFIX):
+                general_text = f"{_GENERAL_EDUCATION_PREFIX} {general_text}"
+            grounding = self.grounding.validate(
+                answer_text=general_text,
+                citation_ids=[],
+                retrieved=[],
+                require_citation=False,
+            )
+            if not grounding.ok:
+                return await self._finalize(
+                    user=user,
+                    session=session,
+                    user_text=normalized,
+                    assistant_text=localized_message(
+                        "insufficient_evidence",
+                        language=language,
+                        english_fallback=INSUFFICIENT_EVIDENCE_MESSAGE,
+                    ),
+                    mode=ChatResponseMode.INSUFFICIENT_EVIDENCE,
+                    citations=[],
+                    safety_notice=ASSISTANT_DISCLAIMER,
+                    audit_action=AuditActions.CHAT_INSUFFICIENT_EVIDENCE,
+                    provider=answer.provider,
+                    model_name=answer.model_name,
+                    retrieval_mode=retrieval_mode,
+                )
+            post_ok, replacement = self.safety_policy.post_check(general_text)
+            if not post_ok:
+                return await self._finalize(
+                    user=user,
+                    session=session,
+                    user_text=normalized,
+                    assistant_text=replacement or INSUFFICIENT_EVIDENCE_MESSAGE,
+                    mode=ChatResponseMode.POLICY_REFUSAL,
+                    citations=[],
+                    safety_notice=ASSISTANT_DISCLAIMER,
+                    audit_action=AuditActions.CHAT_POLICY_REFUSAL,
+                    provider=answer.provider,
+                    model_name=answer.model_name,
+                    retrieval_mode=retrieval_mode,
+                )
+            return await self._finalize(
+                user=user,
+                session=session,
+                user_text=normalized,
+                assistant_text=general_text,
+                mode=ChatResponseMode.AI_GENERAL_EDUCATION,
+                citations=[],
+                safety_notice=ASSISTANT_DISCLAIMER,
+                audit_action=AuditActions.CHAT_RESPONSE_GENERATED,
+                provider=answer.provider,
+                model_name=answer.model_name,
+                evidence_coverage="not_medically_reviewed",
+                follow_up_suggestions=[],
                 retrieval_mode=retrieval_mode,
             )
 
@@ -465,6 +569,7 @@ class ChatService:
                 role=ChatMessageRole.ASSISTANT,
                 content=assistant_text,
                 response_mode=mode,
+                evidence_coverage=evidence_coverage,
                 source_citations=list(citations),
                 safety_notice=safety_notice,
                 model_provider=provider,

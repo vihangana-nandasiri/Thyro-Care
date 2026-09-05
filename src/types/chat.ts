@@ -2,6 +2,7 @@
 
 export type ChatResponseMode =
   | "grounded_answer"
+  | "ai_general_education"
   | "insufficient_evidence"
   | "safety_redirect"
   | "provider_unavailable"

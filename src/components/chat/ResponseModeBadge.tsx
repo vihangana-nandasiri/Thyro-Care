@@ -2,6 +2,7 @@ import type { ChatResponseMode } from "@/types/chat";
 
 const LABELS: Record<ChatResponseMode, string> = {
   grounded_answer: "Approved-source answer",
+  ai_general_education: "AI-generated · not medically reviewed",
   insufficient_evidence: "Limited evidence available",
   safety_redirect: "Safety guidance",
   provider_unavailable: "Provider temporarily unavailable",

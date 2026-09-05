@@ -181,6 +181,7 @@ class ChatSessionStatus(StrEnum):
 
 class ChatResponseMode(StrEnum):
     GROUNDED_ANSWER = "grounded_answer"
+    AI_GENERAL_EDUCATION = "ai_general_education"
     INSUFFICIENT_EVIDENCE = "insufficient_evidence"
     SAFETY_REDIRECT = "safety_redirect"
     PROVIDER_UNAVAILABLE = "provider_unavailable"
@@ -214,6 +215,7 @@ class EvidenceCoverage(StrEnum):
     HIGH = "high"
     PARTIAL = "partial"
     INSUFFICIENT = "insufficient"
+    NOT_MEDICALLY_REVIEWED = "not_medically_reviewed"
 
 
 class StructuredResponseCategory(StrEnum):
