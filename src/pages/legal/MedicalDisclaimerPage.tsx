@@ -2,9 +2,11 @@ import { Link } from "react-router";
 import { BrandLogo } from "@/components/common";
 import { ROUTES } from "@/constants/routes";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function MedicalDisclaimerPage() {
   useDocumentTitle("Medical disclaimer");
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-background" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="max-w-2xl mx-auto px-6 py-12">
@@ -21,7 +23,7 @@ export function MedicalDisclaimerPage() {
           className="text-3xl font-bold text-foreground mb-4"
           style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
         >
-          Medical disclaimer
+          {t("Medical disclaimer")}
         </h1>
         <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-6">
           Placeholder content — Academic prototype only — not clinically validated and not intended for diagnosis, treatment, or real-world medical use.
@@ -45,7 +47,7 @@ export function MedicalDisclaimerPage() {
           to={ROUTES.HOME}
           className="inline-block mt-8 text-sm font-semibold text-primary hover:underline"
         >
-          Back to home
+          {t("Back to home")}
         </Link>
       </div>
     </div>

@@ -6,6 +6,7 @@ import { BLUE, TEAL } from "@/constants/colors";
 import { getNavItemsForRole } from "@/constants/navigation";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 type SidebarProps = {
   collapsed: boolean;
@@ -27,6 +28,7 @@ function NavBody({
 }) {
   const navigate = useNavigate();
   const { logout, user, role } = useAuth();
+  const { t } = useLanguage();
   const items = getNavItemsForRole(role);
   const homePath =
     role === "admin"
@@ -91,7 +93,7 @@ function NavBody({
               key={item.path}
               to={item.path}
               onClick={() => onNavigate?.()}
-              aria-label={item.label}
+              aria-label={t(item.label)}
               className={({ isActive }) =>
                 `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                   isActive
@@ -104,7 +106,7 @@ function NavBody({
               }
             >
               <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-              {!collapsed && <span>{item.label}</span>}
+              {!collapsed && <span>{t(item.label)}</span>}
             </NavLink>
           );
         })}
@@ -120,7 +122,7 @@ function NavBody({
         <NavLink
           to={ROUTES.EMERGENCY}
           onClick={() => onNavigate?.()}
-          aria-label="Emergency support"
+          aria-label={t("Emergency")}
           className={({ isActive }) =>
             `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 ${
               isActive ? "bg-red-500 text-white" : "text-red-500 hover:bg-red-50"
@@ -128,16 +130,16 @@ function NavBody({
           }
         >
           <AlertTriangle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-          {!collapsed && <span>Emergency</span>}
+          {!collapsed && <span>{t("Emergency")}</span>}
         </NavLink>
         <button
           type="button"
           onClick={handleLogout}
-          aria-label="Logout"
+          aria-label={t("Logout")}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
         >
           <LogOut className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-          {!collapsed && <span>Logout</span>}
+          {!collapsed && <span>{t("Logout")}</span>}
         </button>
       </div>
     </>
@@ -220,12 +222,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
 }
 
 export function MobileMenuButton({ onClick }: { onClick: () => void }) {
+  const { t } = useLanguage();
   return (
     <button
       type="button"
       onClick={onClick}
       className="md:hidden p-2 rounded-xl hover:bg-accent text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-      aria-label="Open navigation menu"
+      aria-label={t("Open navigation menu")}
     >
       <Menu className="w-5 h-5" aria-hidden="true" />
     </button>
@@ -233,12 +236,13 @@ export function MobileMenuButton({ onClick }: { onClick: () => void }) {
 }
 
 export function SkipLink() {
+  const { t } = useLanguage();
   return (
     <a
       href="#main-content"
       className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-foreground focus:px-4 focus:py-2 focus:rounded-xl focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary"
     >
-      Skip to main content
+      {t("Skip to main content")}
     </a>
   );
 }

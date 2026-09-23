@@ -7,6 +7,7 @@ import { BLUE, TEAL } from "@/constants/colors";
 import { ROUTES } from "@/constants/routes";
 import { env } from "@/config/env";
 import { useAuth } from "@/context/AuthContext";
+import { LanguageSwitcher, useLanguage } from "@/context/LanguageContext";
 import { requestOtp } from "@/services/authService";
 import { useToast } from "@/hooks/useToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -45,6 +46,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { loginWithOtp, googleLogin } = useAuth();
+  const { t } = useLanguage();
   const { success, error: showError } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [googleBusy, setGoogleBusy] = useState(false);
@@ -78,10 +80,10 @@ export function LoginPage() {
       const result = await requestOtp(phoneNumber);
       setOtpSent(true);
       setResendIn(result.retry_after_seconds ?? 60);
-      success(result.demo_otp ? `Demo OTP: ${result.demo_otp}` : "If registered, your OTP is on its way");
+      success(result.demo_otp ? `${t("Demo OTP")}: ${result.demo_otp}` : t("If registered, your OTP is on its way"));
     } catch (err) {
       const appErr = err as AppError;
-      const message = appErr?.message || "Enter a valid Sri Lankan phone number.";
+      const message = appErr?.message || t("Enter a valid Sri Lankan phone number.");
       setFormError(message);
       showError(message);
     } finally {
@@ -95,11 +97,11 @@ export function LoginPage() {
     setFormError(null);
     try {
       const signedInUser = await loginWithOtp(phoneNumber, otp);
-      success("Signed in successfully");
+      success(t("Signed in successfully"));
       redirectAfterAuth(signedInUser);
     } catch (err) {
       const appErr = err as AppError;
-      const message = appErr?.message || "The OTP is incorrect or expired.";
+      const message = appErr?.message || t("The OTP is incorrect or expired.");
       setFormError(message);
       showError(message);
     } finally {
@@ -113,11 +115,11 @@ export function LoginPage() {
     setFormError(null);
     try {
       const signedInUser = await googleLogin(credential);
-      success("Signed in successfully");
+      success(t("Signed in successfully"));
       redirectAfterAuth(signedInUser);
     } catch (err) {
       const appErr = err as AppError;
-      const message = appErr?.message || "Google Sign-In failed. Please try again.";
+      const message = appErr?.message || t("Google Sign-In failed. Please try again.");
       setFormError(message);
       showError(message);
     } finally {
@@ -136,6 +138,7 @@ export function LoginPage() {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-8">
               <BrandLogo size="md" />
+              <LanguageSwitcher />
               <span
                 className="font-bold text-lg text-foreground"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
@@ -147,9 +150,9 @@ export function LoginPage() {
               className="text-3xl font-bold text-foreground mb-2"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Welcome back
+              {t("Welcome back")}
             </h1>
-            <p className="text-muted-foreground">Continue your recovery journey</p>
+            <p className="text-muted-foreground">{t("Continue your recovery journey")}</p>
           </div>
 
           <form
@@ -162,7 +165,7 @@ export function LoginPage() {
             noValidate
           >
             <Input
-              label="Sri Lankan phone number"
+              label={t("Sri Lankan phone number")}
               type="tel"
               placeholder="+94771234567"
               autoComplete="tel"
@@ -173,7 +176,7 @@ export function LoginPage() {
             />
             {otpSent ? (
               <Input
-                label="6-digit OTP"
+                label={t("6-digit OTP")}
                 type="text"
                 inputMode="numeric"
                 maxLength={6}
@@ -198,7 +201,7 @@ export function LoginPage() {
               disabled={submitting || googleBusy}
               aria-busy={submitting}
             >
-              {submitting ? "Please wait…" : otpSent ? "Verify & Login" : "Send OTP"}
+              {submitting ? t("Please wait…") : otpSent ? t("Verify & Login") : t("Send OTP")}
             </Btn>
 
             {otpSent ? (
@@ -208,7 +211,7 @@ export function LoginPage() {
                 onClick={() => void onSendOtp()}
                 className="w-full text-sm font-semibold text-primary disabled:text-muted-foreground"
               >
-                {resendIn > 0 ? `Resend OTP in ${resendIn}s` : "Resend OTP"}
+                {resendIn > 0 ? `${t("Resend OTP in")} ${resendIn}s` : t("Resend OTP")}
               </button>
             ) : null}
 
@@ -220,7 +223,7 @@ export function LoginPage() {
                   </div>
                   <div className="relative flex justify-center">
                     <span className="bg-background px-3 text-xs text-muted-foreground">
-                      or continue with
+                      {t("or continue with")}
                     </span>
                   </div>
                 </div>
@@ -237,13 +240,13 @@ export function LoginPage() {
             ) : null}
 
             <p className="text-center text-sm text-muted-foreground">
-              No account?{" "}
+              {t("No account?")}{" "}
               <button
                 type="button"
                 onClick={() => navigate(ROUTES.REGISTER)}
                 className="font-semibold text-primary hover:underline cursor-pointer"
               >
-                Create one
+                {t("Create one")}
               </button>
             </p>
           </form>

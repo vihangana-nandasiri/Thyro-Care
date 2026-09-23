@@ -24,9 +24,11 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useMedications } from "@/hooks/useMedications";
 import { useAppointments } from "@/hooks/useAppointments";
 import { useSymptoms } from "@/hooks/useSymptoms";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function DashboardPage() {
     const { user } = useAuth();
+    const { t } = useLanguage();
   useDocumentTitle("Dashboard");
   const navigate = useNavigate();
   const { todaySchedule, adherence, loading: medLoading } = useMedications();
@@ -36,15 +38,16 @@ export function DashboardPage() {
 
   const quickStats = useMemo(() => {
     return mockDashboardQuickStats.map((s) => {
-      if (s.label !== "Medical Progress") return s;
-      if (medLoading) return { ...s, value: "…" };
+      if (s.label !== "Medical Progress") return { ...s, label: t(s.label) };
+      if (medLoading) return { ...s, label: t(s.label), value: "…" };
       const pct = adherence?.adherence_percentage;
       return {
         ...s,
-       value: pct === null || pct === undefined ? "No data" : `${Math.round(pct)}%`,
+      label: t(s.label),
+      value: pct === null || pct === undefined ? t("No data") : `${Math.round(pct)}%`,
       };
     });
-  }, [adherence, medLoading]);
+  }, [adherence, medLoading, t]);
 
   const cards = useMemo(() => {
     const pending = todaySchedule.filter((i) => !i.log_status).length;
@@ -54,30 +57,32 @@ export function DashboardPage() {
     return mockDashboardCards.map((c) => {
       if (c.id === "medication") {
         if (medLoading) {
-          return { ...c, value: "Loading…", sub: "Today's schedule" };
+          return { ...c, label: t(c.label), value: t("Loading…"), sub: t("Today's schedule") };
         }
         if (todaySchedule.length === 0) {
-          return { ...c, value: "No doses today", sub: "Open Medications" };
+          return { ...c, label: t(c.label), value: t("No doses today"), sub: t("Open Medications") };
         }
         if (next) {
           return {
             ...c,
             value: `${next.medication_name}`,
-            sub: `${next.scheduled_local_time} · ${pending} pending`,
+            label: t(c.label),
+            sub: `${next.scheduled_local_time} · ${pending} ${t("pending")}`,
           };
         }
         return {
           ...c,
           value: `${taken} of ${todaySchedule.length} taken`,
-          sub: "Today's schedule complete",
+          label: t(c.label),
+          sub: t("Today's schedule complete"),
         };
       }
       if (c.id === "followup") {
         if (apptLoading) {
-          return { ...c, value: "Loading…", sub: "Follow-ups" };
+          return { ...c, label: t(c.label), value: t("Loading…"), sub: t("Follow-ups") };
         }
         if (!nextAppt) {
-          return { ...c, value: "No upcoming", sub: "Open Follow-ups" };
+          return { ...c, label: t(c.label), value: t("No upcoming"), sub: t("Open Follow-ups") };
         }
         const when = new Date(nextAppt.scheduled_start).toLocaleDateString(undefined, {
           month: "short",
@@ -91,10 +96,10 @@ export function DashboardPage() {
       }
       if (c.id === "symptoms") {
         if (symLoading) {
-          return { ...c, value: "Loading…", sub: "Symptom tracking" };
+          return { ...c, label: t(c.label), value: t("Loading…"), sub: t("Symptom tracking") };
         }
         if (activeSymptoms.length === 0 && allSymptoms.length === 0) {
-          return { ...c, value: "No entries yet", sub: "Open Symptoms" };
+          return { ...c, label: t(c.label), value: t("No entries yet"), sub: t("Open Symptoms") };
         }
         const recent = allSymptoms[0];
         const when = recent
@@ -106,12 +111,13 @@ export function DashboardPage() {
         return {
           ...c,
           value: `${activeSymptoms.length} active`,
-          sub: recent ? `Last: ${when}` : "Open Symptoms",
+          label: t(c.label),
+          sub: recent ? `${t("Last")}: ${when}` : t("Open Symptoms"),
         };
       }
       return c;
     });
-  }, [todaySchedule, medLoading, upcoming, apptLoading, activeSymptoms, allSymptoms, symLoading]);
+  }, [todaySchedule, medLoading, upcoming, apptLoading, activeSymptoms, allSymptoms, symLoading, t]);
 
   return (
     <>
@@ -162,7 +168,7 @@ export function DashboardPage() {
                 className="font-bold text-sm text-foreground"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
               >
-                {c.label}
+                {t(c.label)}
               </div>
               <div className="text-sm text-muted-foreground mt-0.5">{c.id === "profile" ? (user?.full_name ?? "Account") : c.value}</div>
               <div className="text-xs text-muted-foreground">{c.sub}</div>
@@ -179,9 +185,9 @@ export function DashboardPage() {
               className="font-bold text-foreground"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Weekly Health Score
+              {t("Weekly Health Score")}
             </h3>
-            <Badge color="blue">This week</Badge>
+            <Badge color="blue">{t("This week")}</Badge>
           </div>
           <ResponsiveContainer width="100%" height={160}>
             <AreaChart data={weekData} margin={{ top: 5, right: 0, left: -30, bottom: 0 }}>
@@ -218,7 +224,7 @@ export function DashboardPage() {
             className="font-bold text-foreground mb-4"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
-            Today&apos;s Reminders
+            {t("Today's Reminders")}
           </h3>
           <div className="space-y-3">
             {mockDashboardReminders.map((r) => (

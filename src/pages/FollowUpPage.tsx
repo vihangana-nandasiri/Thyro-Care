@@ -24,6 +24,7 @@ import {
 import type { AppError } from "@/types/api";
 import { useToast } from "@/hooks/useToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useLanguage } from "@/context/LanguageContext";
 import { useAppointments } from "@/hooks/useAppointments";
 
 function browserTimezone(): string {
@@ -78,6 +79,7 @@ function typeLabel(value: string): string {
 }
 
 export function FollowUpPage() {
+  const { t } = useLanguage();
   useDocumentTitle("Follow-ups");
   const { success, error: showError } = useToast();
   const { loading, error: loadError, appointments, upcoming, refresh } = useAppointments();
@@ -288,7 +290,7 @@ export function FollowUpPage() {
               className="text-lg font-bold text-foreground"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Care Timeline
+              {t("Care Timeline")}
             </h2>
             <Btn ref={triggerRef} size="sm" variant="ghost" type="button" onClick={openCreate}>
               <Plus className="w-4 h-4" aria-hidden="true" /> Add Appointment
@@ -300,7 +302,7 @@ export function FollowUpPage() {
               {timeline.length === 0 ? (
                 <Card>
                   <p className="text-sm text-muted-foreground">
-                    No appointments yet. Add your first follow-up to start tracking.
+                    {t("No appointments yet. Add your first follow-up to start tracking.")}
                   </p>
                 </Card>
               ) : (
@@ -429,7 +431,7 @@ export function FollowUpPage() {
               className="font-bold text-foreground mb-3"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Next Appointment
+              {t("Next Appointment")}
             </h3>
             {nextAppointment ? (
               <div
@@ -449,12 +451,12 @@ export function FollowUpPage() {
                 <div className="mt-3 p-2.5 bg-amber-50 rounded-xl border border-amber-200">
                   <p className="text-xs text-amber-700 font-semibold">
                     <AlertTriangle className="w-3 h-3 inline mr-1" aria-hidden="true" />
-                    Tracking only — follow your healthcare team’s instructions.
+                    {t("Tracking only — follow your healthcare team’s instructions.")}
                   </p>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No upcoming appointments.</p>
+              <p className="text-sm text-muted-foreground">{t("No upcoming appointments.")}</p>
             )}
           </Card>
 
@@ -463,11 +465,11 @@ export function FollowUpPage() {
               className="font-bold text-foreground mb-3"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              TSH History
+              {t("TSH History")}
             </h3>
             <div className="space-y-2 text-sm">
   <p className="text-muted-foreground">
-    No lab results recorded.
+    {t("No lab results recorded.")}
   </p>
 </div>
           </Card>

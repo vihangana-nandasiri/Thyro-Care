@@ -52,6 +52,7 @@ function parseEvent(block: string): ChatStreamEvent | null {
 export async function streamMessage(
   sessionId: string,
   content: string,
+  language: "en" | "si",
   handlers: ChatStreamHandlers,
   signal: AbortSignal,
 ): Promise<ChatAssistantResponse> {
@@ -67,7 +68,7 @@ export async function streamMessage(
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(csrf ? { "X-CSRF-Token": csrf } : {}),
     },
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ content, language }),
   });
 
   if (!response.ok) {

@@ -7,14 +7,17 @@ import type { ReactNode } from "react";
 import { AuthProvider } from "@/context/AuthContext";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { ToastProvider } from "@/components/common/Toast";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        {children}
-        <ToastProvider />
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          {children}
+          <ToastProvider />
+        </AuthProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   );
 }

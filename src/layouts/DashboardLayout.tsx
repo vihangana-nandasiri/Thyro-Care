@@ -4,13 +4,16 @@ import { Sidebar, MobileMenuButton, SkipLink } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { resolveRouteTitle } from "@/constants/routes";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { pathname } = useLocation();
   const title = resolveRouteTitle(pathname);
-  useDocumentTitle(title.replace(/👋/g, "").trim() || "Dashboard");
+  const { t } = useLanguage();
+  const translatedTitle = t(title);
+  useDocumentTitle(translatedTitle.replace(/👋/g, "").trim() || t("Dashboard"));
 
   return (
     <>
@@ -24,7 +27,7 @@ export function DashboardLayout() {
         />
         <div className="flex-1 flex flex-col min-w-0">
           <TopBar
-            title={title}
+            title={translatedTitle}
             leading={<MobileMenuButton onClick={() => setMobileOpen(true)} />}
           />
           <main

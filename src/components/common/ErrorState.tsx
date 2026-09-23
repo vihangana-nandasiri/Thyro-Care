@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import { Btn } from "@/components/common/Button";
+import { useLanguage } from "@/context/LanguageContext";
 
 type ErrorStateProps = {
   title?: string;
@@ -15,6 +16,7 @@ export function ErrorState({
   onRetry,
   className = "",
 }: ErrorStateProps) {
+  const { t } = useLanguage();
   return (
     <div
       className={`flex flex-col items-center justify-center text-center gap-3 py-12 px-4 ${className}`}
@@ -27,12 +29,12 @@ export function ErrorState({
         className="text-lg font-bold text-foreground"
         style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
       >
-        {title}
+        {t(title)}
       </h3>
-      <p className="text-sm text-muted-foreground max-w-sm">{message}</p>
+      <p className="text-sm text-muted-foreground max-w-sm">{t(message)}</p>
       {onRetry ? (
         <Btn variant="ghost" size="sm" onClick={onRetry}>
-          Try again
+          {t("Try again")}
         </Btn>
       ) : null}
     </div>

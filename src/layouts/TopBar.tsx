@@ -5,11 +5,13 @@ import { Avatar } from "@/components/common";
 import { mockNotificationCount } from "@/data/mock";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/context/AuthContext";
+import { LanguageSwitcher, useLanguage } from "@/context/LanguageContext";
 
 export function TopBar({ title, leading }: { title: string; leading?: ReactNode }) {
   const [notifs, setNotifs] = useState(mockNotificationCount);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const displayName = user?.full_name ?? "Account";
 
   return (
@@ -31,15 +33,16 @@ export function TopBar({ title, leading }: { title: string; leading?: ReactNode 
         </label>
         <input
           id="topbar-search"
-          placeholder="Search..."
+          placeholder={t("Search...")}
           className="pl-9 pr-4 py-2 rounded-xl bg-muted border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 w-40 lg:w-48"
         />
       </div>
+      <LanguageSwitcher />
       <button
         type="button"
         className="relative p-2 rounded-xl hover:bg-accent transition text-muted-foreground cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
         onClick={() => setNotifs(0)}
-        aria-label={notifs > 0 ? `Notifications, ${notifs} unread` : "Notifications"}
+        aria-label={notifs > 0 ? `${t("Notifications")}, ${notifs} unread` : t("Notifications")}
       >
         <Bell className="w-5 h-5" aria-hidden="true" />
         {notifs > 0 && (
@@ -52,7 +55,7 @@ export function TopBar({ title, leading }: { title: string; leading?: ReactNode 
         type="button"
         onClick={() => navigate(ROUTES.PROFILE)}
         className="cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-full"
-        aria-label={`Open profile for ${displayName}`}
+        aria-label={`${t("Profile")} ${displayName}`}
       >
         <Avatar name={displayName} size={9} />
       </button>

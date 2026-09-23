@@ -11,11 +11,13 @@ import { useToast } from "@/hooks/useToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SkipLink } from "@/layouts/Sidebar";
 import type { AppError } from "@/types/api";
+import { LanguageSwitcher, useLanguage } from "@/context/LanguageContext";
 
 export function RegisterPage() {
   useDocumentTitle("Register");
   const navigate = useNavigate();
   const { register: registerAccount } = useAuth();
+  const { t } = useLanguage();
   const { success, error: showError } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -100,19 +102,22 @@ export function RegisterPage() {
               onClick={() => navigate(ROUTES.HOME)}
               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded"
             >
-              <ChevronLeft className="w-4 h-4" aria-hidden="true" /> Back
+              <ChevronLeft className="w-4 h-4" aria-hidden="true" /> {t("Back")}
             </button>
           </div>
           <div className="text-center mb-8">
-            <BrandLogo size="lg" className="mx-auto mb-4" />
+            <div className="relative">
+              <BrandLogo size="lg" className="mx-auto mb-4" />
+              <div className="absolute right-0 top-0"><LanguageSwitcher /></div>
+            </div>
             <h1
               className="text-3xl font-bold text-foreground mb-2"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Create Your Account
+              {t("Create Your Account")}
             </h1>
             <p className="text-muted-foreground">
-              Join ThyroCare AI and take control of your recovery
+              {t("Join ThyroCare AI and take control of your recovery")}
             </p>
           </div>
           <Card>
@@ -124,14 +129,14 @@ export function RegisterPage() {
             >
               <div className="grid sm:grid-cols-2 gap-4">
                 <Input
-                  label="Full Name"
+                  label={t("Full Name")}
                   placeholder="Sarah Johnson"
                   autoComplete="name"
                   error={errors.fullName?.message}
                   {...register("fullName")}
                 />
                 <Input
-                  label="Email Address"
+                  label={t("Email Address")}
                   type="email"
                   placeholder="sarah@email.com"
                   autoComplete="email"
@@ -139,7 +144,7 @@ export function RegisterPage() {
                   {...register("email")}
                 />
                 <Input
-                  label="Phone Number"
+                  label={t("Phone Number")}
                   type="tel"
                   placeholder="+94771234567"
                   autoComplete="tel"
@@ -147,7 +152,7 @@ export function RegisterPage() {
                   {...register("phoneNumber")}
                 />
                 <Input
-                  label="Password"
+                  label={t("Password")}
                   type="password"
                   placeholder="Create a strong password"
                   autoComplete="new-password"
@@ -155,7 +160,7 @@ export function RegisterPage() {
                   {...register("password")}
                 />
                 <Input
-                  label="Confirm Password"
+                  label={t("Confirm Password")}
                   type="password"
                   placeholder="Repeat your password"
                   autoComplete="new-password"
@@ -163,7 +168,7 @@ export function RegisterPage() {
                   {...register("confirmPassword")}
                 />
                 <Input
-                  label="Age"
+                  label={t("Age")}
                   type="number"
                   placeholder="35"
                   error={errors.age?.message}

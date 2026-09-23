@@ -22,6 +22,7 @@ import {
 import type { AppError } from "@/types/api";
 import { useToast } from "@/hooks/useToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useLanguage } from "@/context/LanguageContext";
 import { useMedications } from "@/hooks/useMedications";
 
 function todayISO(): string {
@@ -69,6 +70,7 @@ function medicationToForm(med: Medication): MedicationFormSchemaValues {
 }
 
 export function MedicationPage() {
+  const { t } = useLanguage();
   useDocumentTitle("Medications");
   const { success, error: showError } = useToast();
   const {
@@ -276,8 +278,7 @@ export function MedicationPage() {
   return (
     <>
       <div className="mb-4 rounded-2xl border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
-        Medication information is for tracking purposes only. Follow your healthcare provider’s
-        instructions. Do not change or stop medication without professional advice.
+        {t("Medication information is for tracking purposes only. Follow your healthcare provider’s instructions. Do not change or stop medication without professional advice.")}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-5">
@@ -287,14 +288,14 @@ export function MedicationPage() {
               className="text-lg font-bold text-foreground"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Today&apos;s Medications
+              {t("Today&apos;s Medications")}
             </h2>
             <div className="flex items-center gap-2">
               <Badge color="green">
                 {takenCount} of {todaySchedule.length} taken
               </Badge>
               <Btn ref={addTriggerRef} size="sm" type="button" onClick={openCreate}>
-                <Plus className="w-4 h-4" aria-hidden="true" /> Add
+                <Plus className="w-4 h-4" aria-hidden="true" /> {t("Add")}
               </Btn>
             </div>
           </div>
@@ -302,8 +303,7 @@ export function MedicationPage() {
           {todaySchedule.length === 0 ? (
             <Card>
               <p className="text-sm text-muted-foreground">
-                No scheduled doses for today. Add a medication with reminder times, or check
-                as-needed medications in your list.
+                {t("No scheduled doses for today. Add a medication with reminder times, or check as-needed medications in your list.")}
               </p>
             </Card>
           ) : (
@@ -330,10 +330,9 @@ export function MedicationPage() {
                 aria-hidden="true"
               />
               <div>
-                <p className="text-sm font-semibold text-amber-800">Missed dose recorded</p>
+                <p className="text-sm font-semibold text-amber-800">{t("Missed dose recorded")}</p>
                 <p className="text-xs text-amber-700 mt-0.5">
-                  A missed dose was logged for tracking only. Follow your healthcare provider’s
-                  guidance about what to do next — this app does not provide dosing advice.
+                  {t("A missed dose was logged for tracking only. Follow your healthcare provider’s guidance about what to do next — this app does not provide dosing advice.")}
                 </p>
               </div>
             </div>
@@ -344,10 +343,10 @@ export function MedicationPage() {
               className="font-bold text-foreground mb-3"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Your medications
+              {t("Your medications")}
             </h3>
             {medications.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No medications saved yet.</p>
+              <p className="text-sm text-muted-foreground">{t("No medications saved yet.")}</p>
             ) : (
               <ul className="space-y-3">
                 {medications.map((med) => (
@@ -363,7 +362,7 @@ export function MedicationPage() {
                     </div>
                     <div className="flex gap-1">
                       <Btn type="button" size="sm" variant="ghost" onClick={() => openEdit(med)}>
-                        Edit
+                        {t("Edit")}
                       </Btn>
                       <Btn
                         type="button"
@@ -371,7 +370,7 @@ export function MedicationPage() {
                         variant="ghost"
                         onClick={() => void onDelete(med)}
                       >
-                        Remove
+                        {t("Remove")}
                       </Btn>
                     </div>
                   </li>
@@ -387,7 +386,7 @@ export function MedicationPage() {
               className="font-bold text-foreground mb-4"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Medication Progress
+              {t("Medication Progress")}
             </h3>
             <div
               className="text-4xl font-extrabold mb-1"
@@ -396,7 +395,7 @@ export function MedicationPage() {
               {adherencePct === null ? "—" : `${Math.round(adherencePct)}%`}
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Last 30 days — tracking metric only, not a clinical assessment.
+              {t("Last 30 days — tracking metric only, not a clinical assessment.")}
             </p>
             <ResponsiveContainer width="100%" height={120}>
               <BarChart data={adherenceChart} margin={{ top: 0, right: 0, left: -30, bottom: 0 }}>

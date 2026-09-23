@@ -29,6 +29,7 @@ import type {
   ChatSession,
 } from "@/types/chat";
 import type { AppError } from "@/types/api";
+import { useLanguage } from "@/context/LanguageContext";
 
 const QUICK_ACTIONS = [
   "Medication Help",
@@ -72,7 +73,8 @@ export function ChatPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { error: toastError, success } = useToast();
-  const userName = user?.full_name || "Patient";
+  const { language, t } = useLanguage();
+  const userName = user?.full_name || t("Patient");
 
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -166,6 +168,7 @@ export function ChatPage() {
         result = await streamMessage(
           id,
           trimmed,
+          language,
           {
             onEvent: (event) => {
               if (event.event === "message.accepted") accepted = true;
@@ -182,7 +185,7 @@ export function ChatPage() {
       } catch (streamError) {
         if (controller.signal.aborted) throw streamError;
         if (accepted) throw streamError;
-        result = await sendMessage(id, trimmed);
+          result = await sendMessage(id, trimmed, language);
       }
       setMsgs((prev) => {
         const withoutOptimistic = prev.filter((m) => m.id !== optimistic.id);
@@ -214,7 +217,7 @@ export function ChatPage() {
         toastError("Generation stopped. You can edit and send your message again.");
       } else if (!navigator.onLine) {
         setLastFailedMessage(trimmed);
-        toastError("You appear to be offline. Reconnect and retry your message.");
+        toastError(t("You appear to be offline. Reconnect and retry your message."));
       } else if (appErr?.status === 429 || (err instanceof ChatStreamError && err.status === 429)) {
         setLastFailedMessage(trimmed);
         toastError("Too many messages. Please wait a moment and try again.");
@@ -223,7 +226,7 @@ export function ChatPage() {
         appErr?.status === 503
       ) {
         setLastFailedMessage(trimmed);
-        toastError("The answer provider is temporarily unavailable. Please retry shortly.");
+        toastError(t("The answer provider is temporarily unavailable. Please retry shortly."));
       } else {
         setLastFailedMessage(trimmed);
         toastError(appErr?.message || "Message could not be sent. Please try again.");
@@ -285,7 +288,7 @@ export function ChatPage() {
       const created = await createSession("New conversation");
       await refreshSessions();
       await openSession(created.id);
-      success("New chat started");
+      success(t("New chat started"));
     } catch (err) {
       const appErr = err as AppError;
       toastError(appErr?.message || "Could not create chat");
@@ -302,7 +305,7 @@ export function ChatPage() {
       } else {
         await handleNewChat();
       }
-      success("Conversation deleted");
+      success(t("Conversation deleted"));
     } catch (err) {
       const appErr = err as AppError;
       toastError(appErr?.message || "Could not delete conversation");
@@ -327,10 +330,10 @@ export function ChatPage() {
           className={`w-56 flex-shrink-0 flex-col p-3 gap-2 ${mobileSessionsOpen ? "fixed inset-y-0 left-0 z-50 flex h-full shadow-xl" : "hidden lg:flex"}`}
         >
           <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1">
-            Recent Chats
+            {t("Recent Chats")}
           </h4>
           {sessions.length === 0 ? (
-            <p className="text-xs text-muted-foreground px-2">No conversations yet.</p>
+            <p className="text-xs text-muted-foreground px-2">{t("No conversations yet.")}</p>
           ) : (
             sessions.map((c) => (
               <div key={c.id} className="flex items-start gap-1">
@@ -374,14 +377,14 @@ export function ChatPage() {
             type="button"
             onClick={() => void handleNewChat()}
           >
-            <Plus className="w-4 h-4" aria-hidden="true" /> New Chat
+            <Plus className="w-4 h-4" aria-hidden="true" /> {t("New Chat")}
           </Btn>
           <button
             type="button"
             onClick={() => void handleExport()}
             className="text-xs font-semibold text-primary hover:underline"
           >
-            Export conversations
+            {t("Export conversations")}
           </button>
           {deleteAllSupported && (
             <button
@@ -389,7 +392,7 @@ export function ChatPage() {
               onClick={() => void handleDeleteAll()}
               className="text-xs font-semibold text-red-600 hover:underline"
             >
-              Delete all conversations
+              {t("Delete all conversations")}
             </button>
           )}
         </Card>
@@ -404,11 +407,11 @@ export function ChatPage() {
             >
               <Menu className="h-4 w-4" />
             </button>
-            <span className="text-sm font-semibold text-foreground">Conversations</span>
+            <span className="text-sm font-semibold text-foreground">{t("Conversations")}</span>
           </div>
           <ChatSafetyBanner />
           <p className="px-4 py-2 text-[11px] text-muted-foreground border-b border-border leading-relaxed">
-            {DISCLAIMER}
+              {t(DISCLAIMER)}
           </p>
 
           {redirectNotice ? (
@@ -454,7 +457,7 @@ export function ChatPage() {
                 disabled={sending}
                 className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-50"
               >
-                {a}
+                {t(a)}
               </button>
             ))}
           </div>
@@ -468,7 +471,7 @@ export function ChatPage() {
           >
             {msgs.length === 0 ? (
               <div className="mx-auto mt-12 max-w-md text-center">
-                <h2 className="text-base font-bold text-foreground">Ask an education question</h2>
+                <h2 className="text-base font-bold text-foreground">{t("Ask an education question")}</h2>
                 <p className="mt-2 text-sm text-muted-foreground">
                   I can explain thyroid-care topics using approved sources when available. I cannot
                   diagnose conditions or interpret lab results.
@@ -501,7 +504,7 @@ export function ChatPage() {
                 onClick={() => void send(lastFailedMessage)}
                 className="font-bold hover:underline"
               >
-                Retry
+                {t("Retry")}
               </button>
             </div>
           )}
@@ -535,7 +538,7 @@ export function ChatPage() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") void send(input);
               }}
-              placeholder="Ask about medications, diet, or follow-up care..."
+              placeholder={t("Ask about medications, diet, or follow-up care...")}
               className="flex-1 min-w-0 py-2.5 px-4 rounded-xl bg-muted border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
               disabled={sending}
               maxLength={4000}

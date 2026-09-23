@@ -172,7 +172,7 @@ async def send_message(
     service: ChatServiceDep,
 ) -> ChatAssistantResponse:
     _ = request
-    return await service.send_message(user, session_id, payload.content)
+    return await service.send_message(user, session_id, payload.content, language=payload.language)
 
 
 @router.post(
@@ -201,7 +201,9 @@ async def send_message_stream(
         return StreamingResponse(_disabled(), media_type="text/event-stream")
 
     async def event_generator():
-        async for chunk in service.stream_message_events(user, session_id, payload.content):
+        async for chunk in service.stream_message_events(
+            user, session_id, payload.content, language=payload.language
+        ):
             if await request.is_disconnected():
                 break
             yield chunk

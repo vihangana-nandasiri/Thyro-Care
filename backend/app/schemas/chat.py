@@ -57,6 +57,7 @@ class ChatMessageCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     content: str = Field(min_length=1, max_length=CHAT_CONTENT_MAX_LENGTH)
+    language: str | None = Field(default=None, pattern=r"^(en|si)$")
 
 
 class ChatMessagePublic(BaseModel):

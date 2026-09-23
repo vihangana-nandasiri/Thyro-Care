@@ -60,10 +60,12 @@ export async function updateSessionTitle(sessionId: string, title: string): Prom
 export async function sendMessage(
   sessionId: string,
   content: string,
+  language: "en" | "si" = "en",
 ): Promise<ChatAssistantResponse> {
   try {
     const { data } = await api.post<ChatAssistantResponse>(`/chat/sessions/${sessionId}/messages`, {
       content,
+      language,
     });
     return data;
   } catch (error) {

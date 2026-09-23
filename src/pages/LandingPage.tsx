@@ -6,11 +6,13 @@ import { ROUTES } from "@/constants/routes";
 import { mockLandingFeatures } from "@/data/mock";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { env } from "@/config/env";
+import { LanguageSwitcher, useLanguage } from "@/context/LanguageContext";
 
 export function LandingPage() {
   useDocumentTitle(env.appName);
   const navigate = useNavigate();
   const features = mockLandingFeatures;
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-background" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -27,18 +29,19 @@ export function LandingPage() {
             </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+            <LanguageSwitcher />
             <Btn variant="ghost" size="sm" onClick={() => navigate(ROUTES.LOGIN)}>
-              Sign In
+              {t("Sign In")}
             </Btn>
             <Btn size="sm" onClick={() => navigate(ROUTES.REGISTER)}>
-              Get Started
+              {t("Get Started")}
             </Btn>
             <button
               type="button"
               onClick={() => navigate(ROUTES.EMERGENCY)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-sm font-semibold hover:bg-red-100 transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
             >
-              <Phone className="w-3.5 h-3.5" aria-hidden="true" /> Emergency
+              <Phone className="w-3.5 h-3.5" aria-hidden="true" /> {t("Emergency")}
             </button>
           </div>
         </div>
@@ -47,12 +50,12 @@ export function LandingPage() {
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-6 pt-16 pb-12 grid lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
-          <Badge color="blue">AI-Powered Healthcare Support</Badge>
+          <Badge color="blue">{t("AI-Powered Healthcare Support")}</Badge>
           <h1
             className="text-5xl font-extrabold text-foreground leading-tight"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
-            Your Recovery,
+            {t("Your Recovery,")}
             <br />
             <span
               style={{
@@ -61,20 +64,18 @@ export function LandingPage() {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              Supported Every Step
+              {t("Supported Every Step")}
             </span>
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            ThyroCare AI is your intelligent companion for life after thyroidectomy — providing
-            personalized guidance, medication support, dietary advice, and 24/7 AI chat for
-            differentiated thyroid cancer survivors.
+            {t("ThyroCare AI is your intelligent companion for life after thyroidectomy — providing personalized guidance, medication support, dietary advice, and 24/7 AI chat for differentiated thyroid cancer survivors.")}
           </p>
           <div className="flex flex-wrap gap-3">
             <Btn size="lg" onClick={() => navigate(ROUTES.REGISTER)}>
-              Start Your Journey <ArrowRight className="w-5 h-5" />
+              {t("Start Your Journey")} <ArrowRight className="w-5 h-5" />
             </Btn>
             <Btn variant="ghost" size="lg" onClick={() => navigate(ROUTES.CHAT)}>
-              Try AI Chat Free
+              {t("Try AI Chat Free")}
             </Btn>
           </div>
           
@@ -102,13 +103,13 @@ export function LandingPage() {
               <div>
                 <p className="text-xs font-semibold text-foreground">ThyroCare AI</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-  Personalized reminders will appear here after sign in.
+                  {t("Personalized reminders will appear here after sign in.")}
 </p>
               </div>
             </div>
           </div>
           <div className="absolute -top-3 -right-3 bg-green-500 text-white rounded-2xl shadow-xl px-4 py-2.5">
-            <div className="text-xs font-bold">Health Score</div>
+            <div className="text-xs font-bold">{t("Health Score")}</div>
             <div
               className="text-2xl font-extrabold"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
@@ -126,10 +127,10 @@ export function LandingPage() {
             className="text-3xl font-bold text-foreground mb-3"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
-            Everything You Need to Recover Confidently
+            {t("Everything You Need to Recover Confidently")}
           </h2>
           <p className="text-muted-foreground">
-            Comprehensive tools designed specifically for post-thyroidectomy patients
+            {t("Comprehensive tools designed specifically for post-thyroidectomy patients")}
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -147,9 +148,9 @@ export function LandingPage() {
                   className="font-bold text-foreground mb-1.5"
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                 >
-                  {f.title}
+                  {t(f.title)}
                 </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t(f.desc)}</p>
               </Card>
             );
           })}
@@ -166,24 +167,23 @@ export function LandingPage() {
             className="text-3xl font-bold mb-3"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
-            Begin Your Recovery Journey Today
+            {t("Begin Your Recovery Journey Today")}
           </h2>
           <p className="opacity-90 mb-6 max-w-md mx-auto">
-            Join thousands of thyroid cancer survivors who trust ThyroCare AI for their daily
-            healthcare support.
+            {t("Join thousands of thyroid cancer survivors who trust ThyroCare AI for their daily healthcare support.")}
           </p>
           <div className="flex justify-center gap-3 flex-wrap">
             <button
               onClick={() => navigate(ROUTES.REGISTER)}
               className="px-7 py-3.5 bg-white rounded-xl font-bold text-blue-600 hover:bg-blue-50 transition cursor-pointer"
             >
-              Create Free Account
+              {t("Create Free Account")}
             </button>
             <button
               onClick={() => navigate(ROUTES.LOGIN)}
               className="px-7 py-3.5 bg-white/20 rounded-xl font-bold text-white border border-white/30 hover:bg-white/30 transition cursor-pointer"
             >
-              Sign In
+              {t("Sign In")}
             </button>
           </div>
         </div>
@@ -193,9 +193,7 @@ export function LandingPage() {
       <footer className="border-t border-border px-6 py-6 text-center">
         <p className="text-xs text-muted-foreground max-w-2xl mx-auto">
           <Shield className="w-3.5 h-3.5 inline mr-1" />
-          <strong>Medical Disclaimer:</strong> ThyroCare AI provides informational support only and
-          is not a substitute for professional medical advice, diagnosis, or treatment. Always
-          consult your healthcare provider for medical decisions. For a medical emergency in Sri Lanka, call 1990 Suwa Seriya or go to the nearest emergency department.
+          <strong>{t("Medical Disclaimer")}:</strong> {t("ThyroCare AI provides informational support only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult your healthcare provider for medical decisions. For a medical emergency in Sri Lanka, call 1990 Suwa Seriya or go to the nearest emergency department.")}
         </p>
       </footer>
     </div>

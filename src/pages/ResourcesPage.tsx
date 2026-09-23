@@ -4,10 +4,12 @@ import { Clock, Play, Info } from "lucide-react";
 import { Card, Badge } from "@/components/common";
 import { BLUE, TEAL } from "@/constants/colors";
 import { mockArticles, mockFaqs, mockVideos } from "@/data/mock";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function ResourcesPage() {
   useDocumentTitle("Resources");
   const [tab, setTab] = useState<"articles" | "videos" | "faqs">("articles");
+  const { t } = useLanguage();
 
   const articles = mockArticles;
   const faqs = mockFaqs;
@@ -15,16 +17,16 @@ export function ResourcesPage() {
   return (
     <>
       <div className="flex gap-2 mb-5">
-        {(["articles", "videos", "faqs"] as const).map((t) => (
+        {(["articles", "videos", "faqs"] as const).map((tabKey) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
             className={`px-5 py-2 rounded-xl text-sm font-semibold transition cursor-pointer capitalize ${
-              tab === t ? "text-white" : "bg-muted text-muted-foreground hover:bg-accent"
+              tab === tabKey ? "text-white" : "bg-muted text-muted-foreground hover:bg-accent"
             }`}
-            style={tab === t ? { background: `linear-gradient(135deg, ${BLUE}, ${TEAL})` } : {}}
+            style={tab === tabKey ? { background: `linear-gradient(135deg, ${BLUE}, ${TEAL})` } : {}}
           >
-            {t === "faqs" ? "FAQs" : t.charAt(0).toUpperCase() + t.slice(1)}
+            {tabKey === "faqs" ? "FAQs" : t(tabKey.charAt(0).toUpperCase() + tabKey.slice(1))}
           </button>
         ))}
       </div>
@@ -35,20 +37,20 @@ export function ResourcesPage() {
             <Card key={a.title} className="hover:shadow-md transition-shadow cursor-pointer group">
               <div className="flex items-center gap-2 mb-3">
                 <Badge color={a.badge as "blue" | "teal" | "green" | "amber" | "red" | "purple"}>
-                  {a.category}
+                  {t(a.category)}
                 </Badge>
-                {a.new && <Badge color="green">New</Badge>}
+                {a.new && <Badge color="green">{t("New")}</Badge>}
               </div>
               <h3
                 className="font-bold text-sm text-foreground leading-snug group-hover:text-primary transition"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
               >
-                {a.title}
+                {t(a.title)}
               </h3>
               <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
                 <Clock className="w-3.5 h-3.5" />
-                <span>{a.time}</span>
-                <a href={a.url} target="_blank" rel="noopener noreferrer" className="ml-auto text-primary font-semibold">Read →</a>
+                <span>{t(a.time)}</span>
+                <a href={a.url} target="_blank" rel="noopener noreferrer" className="ml-auto text-primary font-semibold">{t("Read →")}</a>
               </div>
             </Card>
           ))}
@@ -81,7 +83,7 @@ export function ResourcesPage() {
                   className="font-bold text-sm text-foreground"
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                 >
-                  {v.title}
+                  {t(v.title)}
                 </h3>
               </div>
             </Card>
@@ -98,9 +100,9 @@ export function ResourcesPage() {
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
               >
                 <Info className="w-4 h-4 inline mr-2 text-primary" />
-                {f.q}
+                {t(f.q)}
               </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{f.a}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{t(f.a)}</p>
             </Card>
           ))}
         </div>

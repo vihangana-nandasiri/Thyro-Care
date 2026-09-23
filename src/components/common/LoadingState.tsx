@@ -1,3 +1,5 @@
+import { useLanguage } from "@/context/LanguageContext";
+
 type LoadingStateProps = {
   message?: string;
   className?: string;
@@ -5,6 +7,7 @@ type LoadingStateProps = {
 
 /** Accessible inline loading indicator — preserves existing visual language. */
 export function LoadingState({ message = "Loading…", className = "" }: LoadingStateProps) {
+  const { t } = useLanguage();
   return (
     <div
       className={`flex flex-col items-center justify-center gap-3 py-12 ${className}`}
@@ -15,7 +18,7 @@ export function LoadingState({ message = "Loading…", className = "" }: Loading
         className="w-8 h-8 rounded-full border-2 border-border border-t-primary animate-spin"
         aria-hidden="true"
       />
-      <p className="text-sm text-muted-foreground">{message}</p>
+      <p className="text-sm text-muted-foreground">{t(message)}</p>
     </div>
   );
 }

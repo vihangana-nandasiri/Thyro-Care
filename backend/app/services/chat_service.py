@@ -209,16 +209,16 @@ class ChatService:
         return ChatExportResponse(exported_at=utc_now(), sessions=details)
 
     async def send_message(
-        self, user: UserDocument, session_id: str, content: str
+        self, user: UserDocument, session_id: str, content: str, *, language: str | None = None
     ) -> ChatAssistantResponse:
-        return await self._generate(user, session_id, content)
+        return await self._generate(user, session_id, content, language=language)
 
     async def stream_message_events(
-        self, user: UserDocument, session_id: str, content: str
+        self, user: UserDocument, session_id: str, content: str, *, language: str | None = None
     ) -> AsyncIterator[str]:
         """Yield SSE event lines. Persists only the final validated answer."""
         yield _sse("message.accepted", {"ok": True})
-        result = await self._generate(user, session_id, content)
+        result = await self._generate(user, session_id, content, language=language)
         # Stream final answer as deltas for progressive UX without exposing unvalidated text early.
         text = result.assistant_message.content
         chunk_size = 48
@@ -240,7 +240,7 @@ class ChatService:
         yield _sse("response.completed", json.loads(result.model_dump_json()))
 
     async def _generate(
-        self, user: UserDocument, session_id: str, content: str
+        self, user: UserDocument, session_id: str, content: str, *, language: str | None = None
     ) -> ChatAssistantResponse:
         session = await self.sessions.get_owned_by_id(session_id, user.id)
         if session is None:
@@ -249,7 +249,7 @@ class ChatService:
         max_len = self.settings.chat_max_message_length
         ok, refusal, mode = self.prompt_security.evaluate(content, max_length=max_len)
         normalized = normalize_user_text(content, max_length=max_len)
-        language = detect_dominant_language(normalized)
+        language = language or detect_dominant_language(normalized)
 
         await self.audit.record(
             AuditActions.CHAT_MESSAGE_SUBMITTED,

@@ -5,10 +5,12 @@ import { Card, Badge } from "@/components/common";
 import { BLUE, TEAL, GREEN } from "@/constants/colors";
 import { iodineSeverityLabels } from "@/constants/status";
 import { mockFoodsToEat, mockFoodsToAvoid, mockMeals, mockDietStatus } from "@/data/mock";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function DietPage() {
   useDocumentTitle("Diet Guide");
   const [tab, setTab] = useState<"eat" | "avoid" | "meals">("eat");
+  const { t } = useLanguage();
 
   const foodsToEat = mockFoodsToEat;
   const foodsToAvoid = mockFoodsToAvoid;
@@ -23,12 +25,12 @@ export function DietPage() {
       >
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <p className="font-semibold opacity-90 text-sm">{mockDietStatus.title}</p>
+            <p className="font-semibold opacity-90 text-sm">{t(mockDietStatus.title)}</p>
             <h2
               className="text-2xl font-extrabold mt-1"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Day {mockDietStatus.day} of {mockDietStatus.totalDays}
+              {t("Day")} {mockDietStatus.day} {t("of")} {mockDietStatus.totalDays}
             </h2>
             <p className="opacity-80 text-sm mt-1">Follow the schedule and instructions provided by your healthcare team.</p>
           </div>
@@ -39,7 +41,7 @@ export function DietPage() {
             >
               {mockDietStatus.adherencePct}%
             </div>
-            <div className="text-sm opacity-80">Diet progress today</div>
+            <div className="text-sm opacity-80">{t("Diet progress today")}</div>
             <div className="mt-2 bg-white/20 rounded-full h-2 w-32 ml-auto">
               <div
                 className="bg-white rounded-full h-2"
@@ -61,7 +63,7 @@ export function DietPage() {
             }`}
             style={tab === t ? { background: `linear-gradient(135deg, ${BLUE}, ${TEAL})` } : {}}
           >
-            {t === "eat" ? "Foods to Eat" : t === "avoid" ? "Foods to Avoid" : "Meal Planner"}
+            {t === "eat" ? t("Foods to Eat") : t === "avoid" ? t("Foods to Avoid") : t("Meal Planner")}
           </button>
         ))}
       </div>
@@ -76,9 +78,9 @@ export function DietPage() {
                   className="font-bold text-sm text-foreground"
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                 >
-                  {f.name}
+                  {t(f.name)}
                 </div>
-                <div className="text-xs text-muted-foreground mt-0.5">{f.note}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">{t(f.note)}</div>
               </div>
             </Card>
           ))}
@@ -104,12 +106,12 @@ export function DietPage() {
                   className="font-bold text-sm text-foreground"
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                 >
-                  {f.name}
+                  {t(f.name)}
                 </div>
                 <Badge
                   color={f.severity === "high" ? "red" : f.severity === "medium" ? "amber" : "blue"}
                 >
-                  {iodineSeverityLabels[f.severity]}
+                  {t(iodineSeverityLabels[f.severity])}
                 </Badge>
               </div>
             </Card>
@@ -126,7 +128,7 @@ export function DietPage() {
                   className="font-bold text-foreground"
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                 >
-                  {m.meal}
+                  {t(m.meal)}
                 </h3>
                 <Badge color="teal">{m.cals} cal</Badge>
               </div>

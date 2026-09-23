@@ -20,6 +20,7 @@ import { ROUTES } from "@/constants/routes";
 import { MEDICAL_SAFETY_DISCLAIMER, safetyAnswersSchema } from "@/schemas/symptomSchemas";
 import { useToast } from "@/hooks/useToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useLanguage } from "@/context/LanguageContext";
 import { useSymptoms } from "@/hooks/useSymptoms";
 import { createSymptom, deleteSymptom, updateSymptomStatus } from "@/services/symptomService";
 import type {
@@ -106,6 +107,7 @@ function localInputToIso(local: string): string {
 }
 
 export function SymptomsPage() {
+  const { t } = useLanguage();
   useDocumentTitle("Symptoms");
   const navigate = useNavigate();
   const { error: toastError, success, info } = useToast();
@@ -274,7 +276,7 @@ export function SymptomsPage() {
                 onClick={() => navigate(ROUTES.EMERGENCY)}
                 className="mt-2 text-sm font-bold text-red-600 hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 rounded"
               >
-                Go to Emergency Support →
+                {t("Go to Emergency Support →")}
               </button>
             </div>
           </div>
@@ -287,7 +289,7 @@ export function SymptomsPage() {
                 className="font-bold text-foreground mb-4"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
               >
-                Select Your Symptoms
+                {t("Select Your Symptoms")}
               </h3>
               <div
                 className="grid grid-cols-2 sm:grid-cols-4 gap-3"
@@ -338,7 +340,7 @@ export function SymptomsPage() {
                 className="font-bold text-foreground mb-4"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
               >
-                Severity Level:{" "}
+                {t("Severity Level")}:{" "}
                 <span style={{ color: severityColor(severity) }}>{severityLabel(severity)}</span>
               </h3>
               <label className="sr-only" htmlFor="severity-range">
@@ -358,15 +360,15 @@ export function SymptomsPage() {
                 aria-valuetext={severityLabel(severity)}
               />
               <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>Mild</span>
-                <span>Moderate</span>
-                <span>Severe</span>
+                <span>{t("Mild")}</span>
+                <span>{t("Moderate")}</span>
+                <span>{t("Severe")}</span>
               </div>
             </Card>
 
             <Card className="mb-5 space-y-3">
               <label className="block text-sm font-semibold text-foreground">
-                Frequency
+                {t("Frequency")}
                 <select
                   className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-sm bg-background"
                   value={frequency}
@@ -380,7 +382,7 @@ export function SymptomsPage() {
                 </select>
               </label>
               <label className="block text-sm font-semibold text-foreground">
-                Started
+                {t("Started")}
                 <input
                   type="datetime-local"
                   className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-sm bg-background"
@@ -390,7 +392,7 @@ export function SymptomsPage() {
                 />
               </label>
               <label className="block text-sm font-semibold text-foreground">
-                Notes (optional — not used for safety classification)
+                {t("Notes (optional — not used for safety classification)")}
                 <textarea
                   className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-sm bg-background min-h-[80px]"
                   value={notes}
@@ -401,7 +403,7 @@ export function SymptomsPage() {
             </Card>
 
             <Btn size="lg" type="button" onClick={goToSafety}>
-              <Heart className="w-5 h-5" aria-hidden="true" /> Continue to safety check
+              <Heart className="w-5 h-5" aria-hidden="true" /> {t("Continue to safety check")}
             </Btn>
           </>
         )}
@@ -412,7 +414,7 @@ export function SymptomsPage() {
               className="font-bold text-foreground mb-2"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Safety check questions
+              {t("Safety check questions")}
             </h3>
             <p className="text-xs text-muted-foreground mb-4">
               Answer Yes or No only. These answers support safety awareness guidance — not a

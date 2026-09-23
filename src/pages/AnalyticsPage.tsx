@@ -21,12 +21,14 @@ import {
   mockProgressStats,
   mockHealthScore,
 } from "@/data/mock";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function AnalyticsPage() {
   useDocumentTitle("Analytics");
   const weeklyData = mockWeeklyHealthData;
   const pieData = mockWellnessBreakdown;
   const moods = mockMoodEmojis;
+  const { t } = useLanguage();
 
   return (
     <>
@@ -37,7 +39,7 @@ export function AnalyticsPage() {
       >
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <p className="opacity-80 text-sm">Weekly Health Score</p>
+            <p className="opacity-80 text-sm">{t("Weekly Health Score")}</p>
             <div
               className="text-6xl font-extrabold mt-1"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
@@ -45,14 +47,14 @@ export function AnalyticsPage() {
               {mockHealthScore.value}
               <span className="text-3xl opacity-70">/{mockHealthScore.max}</span>
             </div>
-            <p className="opacity-80 text-sm mt-1">{mockHealthScore.deltaLabel}</p>
+            <p className="opacity-80 text-sm mt-1">{t(mockHealthScore.deltaLabel)}</p>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {mockProgressStats.map((s) => (
               <div key={s.label} className="bg-white/20 rounded-xl px-3 py-2 text-center">
                 <div className="text-lg">{s.icon}</div>
                 <div className="text-sm font-bold">{s.value}</div>
-                <div className="text-xs opacity-70">{s.label}</div>
+                <div className="text-xs opacity-70">{t(s.label)}</div>
               </div>
             ))}
           </div>
@@ -65,7 +67,7 @@ export function AnalyticsPage() {
             className="font-bold text-foreground mb-4"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
-            Weekly Health Trend
+            {t("Weekly Health Trend")}
           </h3>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={weeklyData} margin={{ top: 5, right: 0, left: -30, bottom: 0 }}>
@@ -103,7 +105,7 @@ export function AnalyticsPage() {
             className="font-bold text-foreground mb-4"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
-            Wellness Breakdown
+            {t("Wellness Breakdown")}
           </h3>
           <ResponsiveContainer width="100%" height={150}>
             <PieChart>
@@ -128,7 +130,7 @@ export function AnalyticsPage() {
               <div key={d.name} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full" style={{ background: d.color }} />
-                  <span className="text-muted-foreground">{d.name}</span>
+                  <span className="text-muted-foreground">{t(d.name)}</span>
                 </div>
                 <span className="font-bold text-foreground">{d.value}%</span>
               </div>
@@ -141,14 +143,14 @@ export function AnalyticsPage() {
             className="font-bold text-foreground mb-4"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
-            Mood Tracking This Week
+            {t("Mood Tracking This Week")}
           </h3>
           <div className="grid grid-cols-7 gap-2">
             {weeklyData.map((d, i) => (
               <div key={i} className="flex flex-col items-center gap-2">
                 <span className="text-3xl">{moods[d.mood - 1]}</span>
                 <span className="text-xs font-semibold text-foreground">{d.day}</span>
-                <span className="text-xs text-muted-foreground">{moodLabels[d.mood - 1]}</span>
+                <span className="text-xs text-muted-foreground">{t(moodLabels[d.mood - 1])}</span>
               </div>
             ))}
           </div>

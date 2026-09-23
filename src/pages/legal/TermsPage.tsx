@@ -2,9 +2,11 @@ import { Link } from "react-router";
 import { BrandLogo } from "@/components/common";
 import { ROUTES } from "@/constants/routes";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function TermsPage() {
   useDocumentTitle("Terms of Service");
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-background" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="max-w-2xl mx-auto px-6 py-12">
@@ -21,7 +23,7 @@ export function TermsPage() {
           className="text-3xl font-bold text-foreground mb-4"
           style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
         >
-          Terms of Service
+          {t("Terms of Service")}
         </h1>
         <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
           <p>
@@ -42,7 +44,7 @@ export function TermsPage() {
           to={ROUTES.HOME}
           className="inline-block mt-8 text-sm font-semibold text-primary hover:underline"
         >
-          Back to home
+          {t("Back to home")}
         </Link>
       </div>
     </div>
