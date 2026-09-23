@@ -16,6 +16,7 @@ export const registerSchema = z
   .object({
     fullName: z.string().trim().min(1, "Full name is required").min(2, "Enter your full name"),
     email: z.string().trim().min(1, "Email is required").email("Enter a valid email address"),
+    phoneNumber: z.string().trim().regex(/^\+947\d{8}$/, "Use +94771234567 format"),
     password: z
       .string()
       .min(1, "Password is required")

@@ -38,6 +38,14 @@ INDEX_SPECS: tuple[IndexSpec, ...] = (
     ),
     IndexSpec(
         CollectionName.USERS.value,
+        "ux_users_phone_number_active",
+        [("phone_number", ASCENDING)],
+        unique=True,
+        partial_filter={"phone_number": {"$exists": True}, "is_deleted": False},
+        rationale="Unique OTP login phone for non-deleted users",
+    ),
+    IndexSpec(
+        CollectionName.USERS.value,
         "ix_users_role",
         [("role", ASCENDING)],
         rationale="Role-based admin queries",
@@ -124,6 +132,19 @@ INDEX_SPECS: tuple[IndexSpec, ...] = (
         [("user_id", ASCENDING), ("provider", ASCENDING)],
         unique=True,
         rationale="At most one Google identity per user",
+    ),
+    IndexSpec(
+        CollectionName.OTP_CODES.value,
+        "ix_otp_codes_phone_number",
+        [("phone_number", ASCENDING)],
+        rationale="Lookup OTP challenges by phone number",
+    ),
+    IndexSpec(
+        CollectionName.OTP_CODES.value,
+        "ttl_otp_codes_expires_at",
+        [("expires_at", ASCENDING)],
+        expire_after_seconds=0,
+        rationale="TTL cleanup of expired OTP challenges",
     ),
     # knowledge_chunk_embeddings (Phase 13B)
     IndexSpec(

@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import secrets
 from dataclasses import dataclass
 from datetime import timedelta
 
@@ -20,13 +23,21 @@ from app.core.passwords import hash_password, verify_and_update_password
 from app.core.tokens import create_access_token
 from app.models.enums import AccountStatus, UserRole
 from app.models.object_id import object_id_to_string
+from app.models.otp import OtpCodeDocument
 from app.models.patient_profile import PatientProfileDocument
 from app.models.supporting import RefreshTokenDocument
 from app.models.user import UserDocument
+from app.repositories.otp_repository import OtpRepository
 from app.repositories.patient_profile_repository import PatientProfileRepository
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.user_repository import UserRepository
-from app.schemas.auth import AuthUserPublic, LoginRequest, RegisterRequest, TokenResponse
+from app.schemas.auth import (
+    AuthUserPublic,
+    LoginRequest,
+    OtpRequestResponse,
+    RegisterRequest,
+    TokenResponse,
+)
 from app.services.audit_service import AuditActions, AuditService, email_fingerprint
 from app.services.refresh_token_crypto import (
     hash_refresh_token,
@@ -35,9 +46,11 @@ from app.services.refresh_token_crypto import (
 )
 from app.utils.datetime import utc_now
 from app.utils.email import normalize_email, split_display_email
+from app.utils.phone import normalize_sri_lankan_phone
 
 GENERIC_INVALID = "Invalid email or password."
 ACCOUNT_UNAVAILABLE = "Account is unavailable."
+GENERIC_OTP_MESSAGE = "If this number is registered, an OTP has been sent."
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +66,7 @@ class AuthService:
         self.users = UserRepository(database)
         self.profiles = PatientProfileRepository(database)
         self.refresh_tokens = RefreshTokenRepository(database)
+        self.otps = OtpRepository(database)
         self.audit = AuditService(database)
 
     def _to_public(self, user: UserDocument) -> AuthUserPublic:
@@ -140,6 +154,7 @@ class AuthService:
         user = UserDocument(
             email_normalized=normalized,
             email_display=display,
+            phone_number=payload.phone_number,
             password_hash=password_hash,
             full_name=payload.full_name,
             role=UserRole.PATIENT,
@@ -173,6 +188,68 @@ class AuthService:
             changes_summary="patient_registered",
         )
         return session
+
+    def _hash_otp(self, otp: str) -> str:
+        return hmac.new(
+            self.settings.jwt_secret_key.encode(), otp.encode(), hashlib.sha256
+        ).hexdigest()
+
+    async def request_otp(self, phone_number: str) -> OtpRequestResponse:
+        phone = normalize_sri_lankan_phone(phone_number)
+        now = utc_now()
+        previous = await self.otps.get_latest(phone)
+        if previous is not None and previous.used_at is None:
+            elapsed = int((now - previous.created_at).total_seconds())
+            if elapsed < self.settings.otp_resend_delay_seconds:
+                return OtpRequestResponse(
+                    message=GENERIC_OTP_MESSAGE,
+                    retry_after_seconds=self.settings.otp_resend_delay_seconds - elapsed,
+                )
+
+        otp = f"{secrets.randbelow(1_000_000):06d}"
+        await self.otps.create_token(
+            OtpCodeDocument(
+                phone_number=phone,
+                otp_hash=self._hash_otp(otp),
+                expires_at=now + timedelta(minutes=self.settings.otp_ttl_minutes),
+            )
+        )
+        user = await self.users.get_by_phone_number(phone)
+        return OtpRequestResponse(
+            message=GENERIC_OTP_MESSAGE,
+            demo_otp=(
+                otp
+                if self.settings.otp_demo_mode
+                and self.settings.app_environment == "development"
+                and user is not None
+                else None
+            ),
+        )
+
+    async def verify_otp(
+        self, phone_number: str, otp: str, *, user_agent: str | None = None
+    ) -> AuthSessionResult:
+        phone = normalize_sri_lankan_phone(phone_number)
+        challenge = await self.otps.get_latest(phone)
+        if challenge is None or challenge.used_at is not None:
+            raise UnauthorizedException("Invalid or expired OTP")
+        now = utc_now()
+        if challenge.expires_at <= now or challenge.attempts >= self.settings.otp_max_attempts:
+            raise UnauthorizedException("Invalid or expired OTP")
+        if not hmac.compare_digest(challenge.otp_hash, self._hash_otp(otp)):
+            await self.otps.increment_attempts(challenge.id, self.settings.otp_max_attempts)
+            raise UnauthorizedException("Invalid or expired OTP")
+        consumed = await self.otps.consume_if_valid(
+            challenge.id, now=now, max_attempts=self.settings.otp_max_attempts
+        )
+        user = await self.users.get_by_phone_number(phone)
+        if consumed is None or user is None:
+            raise UnauthorizedException("Invalid or expired OTP")
+        self._ensure_login_allowed(user)
+        user = await self.users.update_one(
+            user.id, {"last_login_at": now, "failed_login_count": 0}
+        )
+        return await self._issue_session(user, user_agent=user_agent, new_family=True)
 
     async def login(
         self,

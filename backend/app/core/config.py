@@ -128,6 +128,10 @@ class Settings(BaseSettings):
         alias="AUTH_RATE_LIMIT_CHANGE_PASSWORD",
     )
     auth_rate_limit_google: str = Field(default="10/minute", alias="AUTH_RATE_LIMIT_GOOGLE")
+    otp_demo_mode: bool = Field(default=False, alias="OTP_DEMO_MODE")
+    otp_ttl_minutes: int = Field(default=5, ge=1, alias="OTP_TTL_MINUTES")
+    otp_resend_delay_seconds: int = Field(default=60, ge=1, alias="OTP_RESEND_DELAY_SECONDS")
+    otp_max_attempts: int = Field(default=5, ge=1, alias="OTP_MAX_ATTEMPTS")
 
     # Phase 11 / 13B — safe assistant (default disabled)
     ai_assistant_enabled: bool = Field(default=False, alias="AI_ASSISTANT_ENABLED")

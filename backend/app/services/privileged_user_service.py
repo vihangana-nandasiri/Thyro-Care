@@ -18,6 +18,7 @@ from app.models.user import UserDocument
 from app.repositories.user_repository import UserRepository
 from app.services.audit_service import AuditActions, AuditService, email_fingerprint
 from app.utils.email import split_display_email
+from app.utils.phone import normalize_sri_lankan_phone
 
 PRIVILEGED_ROLES: frozenset[UserRole] = frozenset(
     {UserRole.ADMIN, UserRole.MEDICAL_EXPERT},
@@ -47,6 +48,7 @@ class PrivilegedUserService:
         role: UserRole | str,
         full_name: str,
         email: str,
+        phone_number: str | None = None,
         password: str,
         confirm_password: str,
     ) -> PrivilegedUserProvisionResult:
@@ -65,12 +67,16 @@ class PrivilegedUserService:
         if await self.users.email_exists(normalized):
             # Refuse duplicates and refuse silently changing any existing role.
             raise ConflictException("An account with this email already exists")
+        phone = normalize_sri_lankan_phone(phone_number) if phone_number else None
+        if phone is not None and await self.users.phone_exists(phone):
+            raise ConflictException("An account with this phone number already exists")
 
         # Administrative policy: trusted CLI provisioning yields an active,
         # verified account (no patient self-registration path).
         user = UserDocument(
             email_normalized=normalized,
             email_display=display,
+            phone_number=phone,
             password_hash=password_hash,
             full_name=cleaned_name,
             role=resolved_role,

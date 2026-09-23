@@ -31,6 +31,7 @@ export function RegisterPage() {
     defaultValues: {
       fullName: "",
       email: "",
+      phoneNumber: "",
       password: "",
       confirmPassword: "",
       age: "",
@@ -49,6 +50,7 @@ export function RegisterPage() {
       await registerAccount({
         full_name: values.fullName,
         email: values.email,
+        phone_number: values.phoneNumber,
         password: values.password,
         confirm_password: values.confirmPassword,
         consent_accepted: values.consent,
@@ -135,6 +137,14 @@ export function RegisterPage() {
                   autoComplete="email"
                   error={errors.email?.message}
                   {...register("email")}
+                />
+                <Input
+                  label="Phone Number"
+                  type="tel"
+                  placeholder="+94771234567"
+                  autoComplete="tel"
+                  error={errors.phoneNumber?.message}
+                  {...register("phoneNumber")}
                 />
                 <Input
                   label="Password"

@@ -48,13 +48,19 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="",
         help="Optional email (otherwise prompted).",
     )
+    parser.add_argument(
+        "--phone-number",
+        default="",
+        help="Optional Sri Lankan phone (otherwise prompted).",
+    )
     return parser.parse_args(argv)
 
 
 def _read_identity(args: argparse.Namespace) -> tuple[str, str]:
     full_name = args.full_name.strip() or input("Full name: ").strip()
     email = args.email.strip() or input("Email: ").strip()
-    return full_name, email
+    phone_number = args.phone_number.strip() or input("Phone number (+947...): ").strip()
+    return full_name, email, phone_number
 
 
 def _read_password() -> tuple[str, str]:
@@ -76,6 +82,7 @@ async def _provision(
     role: str,
     full_name: str,
     email: str,
+    phone_number: str,
     password: str,
     confirm_password: str,
 ) -> int:
@@ -92,6 +99,7 @@ async def _provision(
             role=UserRole(role),
             full_name=full_name,
             email=email,
+            phone_number=phone_number,
             password=password,
             confirm_password=confirm_password,
         )
@@ -112,7 +120,7 @@ async def _provision(
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
     try:
-        full_name, email = _read_identity(args)
+        full_name, email, phone_number = _read_identity(args)
         password, confirm = _read_password()
     except ValidationException as exc:
         print(f"Provisioning failed: {exc.message}", file=sys.stderr)
@@ -127,6 +135,7 @@ def main(argv: list[str] | None = None) -> int:
                 role=args.role,
                 full_name=full_name,
                 email=email,
+                phone_number=phone_number,
                 password=password,
                 confirm_password=confirm,
             )

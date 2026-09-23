@@ -6,6 +6,14 @@ _MIN_DIGITS = 7
 _MAX_DIGITS = 15
 
 
+def normalize_sri_lankan_phone(value: str) -> str:
+    """Normalize the OTP login format to an international Sri Lankan number."""
+    normalized = normalize_optional_phone(value)
+    if normalized is None or len(normalized) != 12 or not normalized.startswith("+947"):
+        raise ValueError("Enter a Sri Lankan mobile number such as +94771234567")
+    return normalized
+
+
 def normalize_optional_phone(value: str | None) -> str | None:
     """Normalize an optional phone string.
 

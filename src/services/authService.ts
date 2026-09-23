@@ -6,6 +6,7 @@ import type {
   ForgotPasswordRequest,
   GoogleAuthRequest,
   LoginRequest,
+  OtpRequestResponse,
   MessageResponse,
   RegisterRequest,
   ResendVerificationRequest,
@@ -36,6 +37,28 @@ export async function login(payload: LoginRequest): Promise<TokenResponse> {
     const { data } = await api.post<TokenResponse>("/auth/login", payload, {
       withCredentials: true,
     });
+    return data;
+  } catch (error) {
+    throw toAppError(error);
+  }
+}
+
+export async function requestOtp(phone_number: string): Promise<OtpRequestResponse> {
+  try {
+    const { data } = await api.post<OtpRequestResponse>("/auth/otp/request", { phone_number });
+    return data;
+  } catch (error) {
+    throw toAppError(error);
+  }
+}
+
+export async function verifyOtp(phone_number: string, otp: string): Promise<TokenResponse> {
+  try {
+    const { data } = await api.post<TokenResponse>(
+      "/auth/otp/verify",
+      { phone_number, otp },
+      { withCredentials: true },
+    );
     return data;
   } catch (error) {
     throw toAppError(error);

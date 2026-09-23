@@ -7,6 +7,7 @@ from pymongo.asynchronous.database import AsyncDatabase
 from app.db.collections import CollectionName
 from app.models.user import UserDocument, normalize_email
 from app.repositories.base import BaseRepository
+from app.utils.phone import normalize_sri_lankan_phone
 
 
 class UserRepository(BaseRepository[UserDocument]):
@@ -22,6 +23,12 @@ class UserRepository(BaseRepository[UserDocument]):
 
     async def email_exists(self, email: str) -> bool:
         return await self.exists({"email_normalized": normalize_email(email)})
+
+    async def get_by_phone_number(self, phone_number: str) -> UserDocument | None:
+        return await self.find_one({"phone_number": normalize_sri_lankan_phone(phone_number)})
+
+    async def phone_exists(self, phone_number: str) -> bool:
+        return await self.exists({"phone_number": normalize_sri_lankan_phone(phone_number)})
 
     async def create_user_document(self, document: UserDocument) -> UserDocument:
         """Insert a user document. Does not hash passwords or issue tokens."""

@@ -1,15 +1,13 @@
-import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router";
+import { Phone, ShieldCheck } from "lucide-react";
 import { Btn, Input, BrandLogo } from "@/components/common";
 import { GoogleSignInButton } from "@/components/auth";
 import { BLUE, TEAL } from "@/constants/colors";
 import { ROUTES } from "@/constants/routes";
 import { env } from "@/config/env";
 import { useAuth } from "@/context/AuthContext";
-import { loginSchema, type LoginFormValues } from "@/schemas/authSchemas";
+import { requestOtp } from "@/services/authService";
 import { useToast } from "@/hooks/useToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SkipLink } from "@/layouts/Sidebar";
@@ -46,28 +44,24 @@ export function LoginPage() {
   useDocumentTitle("Login");
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, googleLogin } = useAuth();
+  const { loginWithOtp, googleLogin } = useAuth();
   const { success, error: showError } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [googleBusy, setGoogleBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [resendIn, setResendIn] = useState(0);
   const googleEnabled = Boolean(env.googleClientId);
 
   const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setFocus,
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      remember: false,
-    },
-  });
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const timer = window.setInterval(() => setResendIn((value) => Math.max(0, value - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [resendIn]);
 
   const redirectAfterAuth = (signedInUser: AuthUser) => {
     const roleHome = roleHomeFor(signedInUser);
@@ -76,17 +70,36 @@ export function LoginPage() {
     navigate(target, { replace: true });
   };
 
-  const onSubmit = async (values: LoginFormValues) => {
+  const onSendOtp = async () => {
     if (submitting) return;
     setSubmitting(true);
     setFormError(null);
     try {
-      const signedInUser = await login({ email: values.email, password: values.password });
+      const result = await requestOtp(phoneNumber);
+      setOtpSent(true);
+      setResendIn(result.retry_after_seconds ?? 60);
+      success(result.demo_otp ? `Demo OTP: ${result.demo_otp}` : "If registered, your OTP is on its way");
+    } catch (err) {
+      const appErr = err as AppError;
+      const message = appErr?.message || "Enter a valid Sri Lankan phone number.";
+      setFormError(message);
+      showError(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const onVerifyOtp = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    setFormError(null);
+    try {
+      const signedInUser = await loginWithOtp(phoneNumber, otp);
       success("Signed in successfully");
       redirectAfterAuth(signedInUser);
     } catch (err) {
       const appErr = err as AppError;
-      const message = appErr?.message || "Invalid email or password.";
+      const message = appErr?.message || "The OTP is incorrect or expired.";
       setFormError(message);
       showError(message);
     } finally {
@@ -110,11 +123,6 @@ export function LoginPage() {
     } finally {
       setGoogleBusy(false);
     }
-  };
-
-  const onInvalid = () => {
-    if (errors.email) setFocus("email");
-    else if (errors.password) setFocus("password");
   };
 
   return (
@@ -147,45 +155,41 @@ export function LoginPage() {
           <form
             id="main-content"
             className="space-y-4"
-            onSubmit={handleSubmit(onSubmit, onInvalid)}
+            onSubmit={(event) => {
+              event.preventDefault();
+              void (otpSent ? onVerifyOtp() : onSendOtp());
+            }}
             noValidate
           >
             <Input
-              label="Email address"
-              type="email"
-              placeholder="you@example.com"
-              autoComplete="email"
-              icon={<User className="w-4 h-4" />}
-              error={errors.email?.message}
-              {...register("email")}
+              label="Sri Lankan phone number"
+              type="tel"
+              placeholder="+94771234567"
+              autoComplete="tel"
+              icon={<Phone className="w-4 h-4" />}
+              value={phoneNumber}
+              onChange={(event) => setPhoneNumber(event.target.value)}
+              disabled={otpSent}
             />
-            <Input
-              label="Password"
-              type="password"
-              placeholder="Enter your password"
-              autoComplete="current-password"
-              error={errors.password?.message}
-              {...register("password")}
-            />
+            {otpSent ? (
+              <Input
+                label="6-digit OTP"
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="000000"
+                autoComplete="one-time-code"
+                icon={<ShieldCheck className="w-4 h-4" />}
+                value={otp}
+                onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))}
+              />
+            ) : null}
 
             {formError ? (
               <p className="text-sm text-red-600" role="alert">
                 {formError}
               </p>
             ) : null}
-
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="rounded" {...register("remember")} />
-                <span className="text-sm text-muted-foreground">Remember me</span>
-              </label>
-              <Link
-                to={ROUTES.FORGOT_PASSWORD}
-                className="text-sm font-semibold text-primary hover:underline"
-              >
-                Forgot password?
-              </Link>
-            </div>
 
             <Btn
               className="w-full justify-center"
@@ -194,8 +198,19 @@ export function LoginPage() {
               disabled={submitting || googleBusy}
               aria-busy={submitting}
             >
-              {submitting ? "Signing in…" : "Sign In"}
+              {submitting ? "Please wait…" : otpSent ? "Verify & Login" : "Send OTP"}
             </Btn>
+
+            {otpSent ? (
+              <button
+                type="button"
+                disabled={submitting || resendIn > 0}
+                onClick={() => void onSendOtp()}
+                className="w-full text-sm font-semibold text-primary disabled:text-muted-foreground"
+              >
+                {resendIn > 0 ? `Resend OTP in ${resendIn}s` : "Resend OTP"}
+              </button>
+            ) : null}
 
             {googleEnabled ? (
               <>

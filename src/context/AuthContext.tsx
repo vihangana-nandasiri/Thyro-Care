@@ -98,6 +98,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [applySession],
   );
 
+  const loginWithOtp = useCallback(
+    async (phoneNumber: string, otp: string) => {
+      const result = await authService.verifyOtp(phoneNumber, otp);
+      applySession(result.access_token, result.user);
+      return result.user;
+    },
+    [applySession],
+  );
+
   const register = useCallback(
     async (payload: RegisterRequest) => {
       const result = await authService.register(payload);
@@ -123,12 +132,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: status === "authenticated" && user !== null,
       role: user?.role ?? null,
       login,
+      loginWithOtp,
       googleLogin,
       register,
       logout,
       refreshSession,
     }),
-    [user, status, login, googleLogin, register, logout, refreshSession],
+    [user, status, login, loginWithOtp, googleLogin, register, logout, refreshSession],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

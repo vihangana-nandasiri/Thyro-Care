@@ -27,10 +27,13 @@ def auth_service(memory_db: MemoryDatabase) -> AuthService:
     return AuthService(memory_db)  # type: ignore[arg-type]
 
 
-def _register_payload(email: str = "Patient@Example.com") -> RegisterRequest:
+def _register_payload(
+    email: str = "Patient@Example.com", phone_number: str | None = None
+) -> RegisterRequest:
     return RegisterRequest(
         full_name="Test Patient",
         email=email,  # type: ignore[arg-type]
+        phone_number=phone_number,
         password="secure-pass-1",
         confirm_password="secure-pass-1",
         consent_accepted=True,
@@ -121,6 +124,29 @@ async def test_login_unknown_email_generic(auth_service: AuthService) -> None:
             LoginRequest(email="missing@example.com", password="secure-pass-1")  # type: ignore[arg-type]
         )
     assert GENERIC_INVALID in str(exc.value)
+
+
+@pytest.mark.asyncio
+async def test_otp_login_is_hashed_demo_only_and_single_use(
+    auth_service: AuthService, memory_db: MemoryDatabase, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("OTP_DEMO_MODE", "true")
+    monkeypatch.setenv("APP_ENVIRONMENT", "development")
+    get_settings.cache_clear()
+    service = AuthService(memory_db)
+    await service.register(_register_payload("otp@example.com", "+94771234567"))
+
+    requested = await service.request_otp("+94771234567")
+    assert requested.demo_otp is not None
+    stored = memory_db["otp_codes"].docs[0]
+    assert "otp" not in stored
+    assert stored["otp_hash"] != requested.demo_otp
+
+    session = await service.verify_otp("+94771234567", requested.demo_otp)
+    assert session.response.user.role == UserRole.PATIENT
+    with pytest.raises(UnauthorizedException):
+        await service.verify_otp("+94771234567", requested.demo_otp)
+    get_settings.cache_clear()
 
 
 @pytest.mark.asyncio

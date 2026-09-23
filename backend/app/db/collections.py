@@ -31,6 +31,7 @@ class CollectionName(StrEnum):
     AUDIT_LOGS = "audit_logs"
     AUTH_ACTION_TOKENS = "auth_action_tokens"
     AUTH_IDENTITIES = "auth_identities"
+    OTP_CODES = "otp_codes"
     KNOWLEDGE_CHUNK_EMBEDDINGS = "knowledge_chunk_embeddings"
     CHAT_RESPONSE_FEEDBACK = "chat_response_feedback"
     CHAT_USAGE_METRICS = "chat_usage_metrics"

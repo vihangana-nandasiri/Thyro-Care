@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, mo
 
 from app.models.enums import AccountStatus, UserRole
 from app.schemas.base import PublicIdSchema
+from app.utils.phone import normalize_sri_lankan_phone
 
 
 class RegisterRequest(BaseModel):
@@ -15,6 +16,7 @@ class RegisterRequest(BaseModel):
 
     full_name: str = Field(min_length=2, max_length=200)
     email: EmailStr
+    phone_number: str | None = Field(default=None, max_length=16)
     password: str = Field(min_length=1, max_length=128)
     confirm_password: str = Field(min_length=1, max_length=128)
     consent_accepted: bool
@@ -27,6 +29,11 @@ class RegisterRequest(BaseModel):
         if len(cleaned) < 2:
             raise ValueError("Enter your full name")
         return cleaned
+
+    @field_validator("phone_number")
+    @classmethod
+    def validate_phone(cls, value: str | None) -> str | None:
+        return normalize_sri_lankan_phone(value) if value is not None else None
 
     @model_validator(mode="after")
     def passwords_and_consent(self) -> RegisterRequest:
@@ -44,6 +51,28 @@ class LoginRequest(BaseModel):
 
     email: EmailStr
     password: str = Field(min_length=1, max_length=128)
+
+
+class OtpRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    phone_number: str = Field(min_length=12, max_length=16)
+
+    @field_validator("phone_number")
+    @classmethod
+    def validate_phone(cls, value: str) -> str:
+        return normalize_sri_lankan_phone(value)
+
+
+class OtpVerifyRequest(OtpRequest):
+    otp: str = Field(pattern=r"^\d{6}$")
+
+
+class OtpRequestResponse(BaseModel):
+    success: bool = True
+    message: str
+    demo_otp: str | None = None
+    retry_after_seconds: int | None = None
 
 
 class ForgotPasswordRequest(BaseModel):

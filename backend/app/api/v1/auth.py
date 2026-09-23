@@ -28,6 +28,9 @@ from app.schemas.auth import (
     GoogleAuthRequest,
     LoginRequest,
     MessageResponse,
+    OtpRequest,
+    OtpRequestResponse,
+    OtpVerifyRequest,
     RegisterRequest,
     ResendVerificationRequest,
     ResetPasswordRequest,
@@ -84,6 +87,10 @@ def _change_password_limit() -> str:
 
 def _google_limit() -> str:
     return get_settings().auth_rate_limit_google
+
+
+def _otp_limit() -> str:
+    return get_settings().auth_rate_limit_login
 
 
 def _apply_session_cookies(
@@ -158,6 +165,38 @@ async def login(
 ) -> TokenResponse:
     session = await auth.login(
         payload,
+        user_agent=request.headers.get("user-agent"),
+    )
+    _apply_session_cookies(
+        response,
+        raw_refresh=session.raw_refresh_token,
+        refresh_max_age=session.refresh_max_age,
+    )
+    return session.response
+
+
+@router.post("/otp/request", response_model=OtpRequestResponse, summary="Request phone OTP")
+@limiter.limit(_otp_limit)
+async def request_otp(
+    payload: OtpRequest,
+    request: Request,
+    auth: AuthServiceDep,
+) -> OtpRequestResponse:
+    _ = request
+    return await auth.request_otp(payload.phone_number)
+
+
+@router.post("/otp/verify", response_model=TokenResponse, summary="Verify phone OTP")
+@limiter.limit(_otp_limit)
+async def verify_otp(
+    payload: OtpVerifyRequest,
+    request: Request,
+    response: Response,
+    auth: AuthServiceDep,
+) -> TokenResponse:
+    session = await auth.verify_otp(
+        payload.phone_number,
+        payload.otp,
         user_agent=request.headers.get("user-agent"),
     )
     _apply_session_cookies(

@@ -19,6 +19,7 @@ export interface AuthUser {
 export interface RegisterRequest {
   full_name: string;
   email: string;
+  phone_number: string;
   password: string;
   confirm_password: string;
   consent_accepted: boolean;
@@ -28,6 +29,13 @@ export interface RegisterRequest {
 export interface LoginRequest {
   email: string;
   password: string;
+}
+
+export interface OtpRequestResponse {
+  success: boolean;
+  message: string;
+  demo_otp?: string | null;
+  retry_after_seconds?: number | null;
 }
 
 export interface ForgotPasswordRequest {
@@ -76,6 +84,7 @@ export interface AuthContextValue {
   isAuthenticated: boolean;
   role: UserRole | null;
   login: (payload: LoginRequest) => Promise<AuthUser>;
+  loginWithOtp: (phoneNumber: string, otp: string) => Promise<AuthUser>;
   googleLogin: (credential: string) => Promise<AuthUser>;
   register: (payload: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
