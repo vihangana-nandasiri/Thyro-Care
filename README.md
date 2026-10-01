@@ -1,220 +1,186 @@
 # ThyroCare AI
 
-**ThyroCare AI – Development of an AI-Powered Personalized Healthcare Assistant for Post-Thyroidectomy Thyroid Cancer Survivorship.**
+ThyroCare AI is a multilingual survivorship-support platform for people receiving post-thyroidectomy care. It combines personal medication, symptom, and report tracking with doctor oversight and an admin-managed medical knowledge workflow.
 
-Educational patient-support prototype for differentiated thyroid cancer survivors after thyroidectomy and radioactive iodine (RAI) treatment.
+Documentation lives in `docs/` as standalone HTML files that embed their diagrams and styles, so each opens in a browser and can be shared on its own:
 
-> **Medical safety:** This system provides informational support only. It does **not** diagnose disease, prescribe medication, change dosages, interpret laboratory results as a clinician, or make emergency treatment decisions. Always consult a qualified healthcare professional. In an emergency, contact local emergency services immediately.
+- [Application guide](docs/app_guide/ThyroCare-App-Guide.html): every role, user journey, business rule, and the AI/RAG pipeline.
+- [Thesis](docs/thesis/ThyroCare-Thesis.html): the seven-chapter research write-up.
 
----
+The HTML files are the sources; edit them directly. Diagram sources are in `docs/app_guide/diagrams/` and `docs/thesis/diagrams/` as D2 files (render with `d2 --theme 0 --pad 24 file.d2 file.svg`).
 
-## Current status
+> ThyroCare AI supports education and personal tracking. It does not diagnose conditions, interpret test results, or recommend treatment.
 
-- **Phase 0:** Complete (baseline + backups + build verified)
-- **Phase 1:** Complete (modular pages/components; UI preserved)
-- **Phase 2:** Complete (React Router, protected layouts, lazy pages)
-- **Phase 3:** Complete (TypeScript strictness, ESLint/Prettier, env, Axios foundation, forms, a11y)
-- **Phase 4:** Complete (FastAPI backend foundation — health/infra only)
-- **Phase 5:** Complete (PyMongo Async models, repositories, indexes — no public CRUD)
-- **Phase 6:** Complete (secure auth: JWT access + HttpOnly refresh + CSRF + RBAC)
-- **Phase 7:** Complete (patient self-profile GET/PATCH + Profile page integration)
-- **Phase 8:** Complete (medication CRUD, dose logs, schedule, adherence + Medication page)
-- **Phase 9:** Complete (appointment/follow-up management + Follow-Up page)
-- **Phase 10:** Complete (symptom tracking + deterministic safety escalation)
-- **Phase 11:** Complete (safe knowledge-grounded assistant foundation)
-- **Phase 12:** Complete (knowledge governance + medical-expert review console)
-- **Phase 13+:** Not started
+## Main features
 
-Mock clinical UI data remains under `src/data/mock/` for diet, resources, analytics, etc. Auth, profile, medications, appointments, symptoms, chat, and knowledge governance use the real API.
+- Patient dashboard for medications, dose tracking, symptoms, reports, and profile management
+- Doctor dashboard for assigned patients, medication plans, symptom history, reports, knowledge review, and patient alerts
+- Admin dashboard for accounts, doctor assignments, audit events, patient alerts, and governed knowledge drafts
+- Medication dose tracking restricted to today or earlier (never a future day), with an optional Web Audio reminder beep for unlogged due doses
+- Emergency page with a direct `tel:1990` call button and an explicit "I'm having an emergency" toggle that shares optional location with the care team — opening the page alone never creates an alert
+- Dedicated alerts section for doctors/admins covering emergency- and urgent-severity events (chat, symptom checks, and the emergency toggle), each with a status control (new/acknowledged/resolved) and a map link when location was shared. The dashboard banner shows only `new` alerts; acknowledging or resolving one removes it from the banner, while the alerts page keeps the full history
+- Draft → review → approve/reject/request changes → retire/restore knowledge workflow, including editing and resubmitting a version after changes are requested
+- Optional DeepSeek educational chat grounded in approved knowledge content and the patient's own medication/symptom record
+- Hybrid RAG retrieval: PostgreSQL full-text search always on, plus multilingual Gemini embeddings (vector search via pgvector, fused with full-text via Reciprocal Rank Fusion) when configured. Retrieval searches all languages, so Sinhala and Tamil questions can use English articles
+- JWT sessions, role-based access control, password hashing, and required authenticator enrollment for new accounts
+- English, Sinhala (`si`), and Tamil (`ta`) interfaces across patient, doctor, and admin dashboards
+- Compact, mobile-friendly dashboards with light-blue accents, searchable symptom tiles, and no progress dashboard
+- Full-page patient chat with conversation history, language-aware replies, and medical-only scope checks
+- Doctor-and-admin-reviewed news, articles, and videos discovered with Serper; patients see only resources approved by both roles
 
-**Chat / educational assistant** uses `/api/v1/chat` with approved-source grounding when content is APPROVED and a provider is configured. Default: assistant disabled (`AI_ASSISTANT_ENABLED=false`). Seed knowledge remains **PENDING_REVIEW** until a medical expert approves it — it is never auto-approved.
-
-**Knowledge governance & medical review (Phase 12):** ADMIN authors and submits knowledge drafts at `/admin/knowledge*`; only **MEDICAL_EXPERT** (never ADMIN) can approve, request changes, reject, or restore content at `/medical-review*`. There is no auto-approve and no LLM approval. See [`docs/knowledge-governance-architecture.md`](docs/knowledge-governance-architecture.md) · [`docs/knowledge-content-lifecycle.md`](docs/knowledge-content-lifecycle.md) · [`docs/medical-review-workflow.md`](docs/medical-review-workflow.md) · [`docs/knowledge-versioning-and-hashing.md`](docs/knowledge-versioning-and-hashing.md) · [`docs/knowledge-publication-and-ingestion.md`](docs/knowledge-publication-and-ingestion.md) · [`docs/knowledge-governance-rbac.md`](docs/knowledge-governance-rbac.md) · [`docs/phase-12-knowledge-governance.md`](docs/phase-12-knowledge-governance.md) · [`docs/phase-12-validation.md`](docs/phase-12-validation.md)
-
-See [`docs/safe-assistant-architecture.md`](docs/safe-assistant-architecture.md) · [`docs/phase-11-validation.md`](docs/phase-11-validation.md) · [`PROJECT_PROGRESS.md`](PROJECT_PROGRESS.md)
-
-### Cloudflare frontend deployment
-
--  Live deployment: Not configured yet.
-- Committed config: `wrangler.jsonc`; Wrangler pinned as `devDependency`
-- Build: `npm run ci:build` · Deploy: `npm run cf:deploy` (no second Vite build)
-- **Does not deploy FastAPI** — see [`docs/cloudflare-frontend-deployment.md`](docs/cloudflare-frontend-deployment.md) and [`docs/backend-production-deployment-checklist.md`](docs/backend-production-deployment-checklist.md)
-- Phase 12 added frontend-only admin/medical-review pages; the deployed Worker build is otherwise unchanged for this phase. Redeploying it to pick up those new pages is a separate action (not required to complete Phase 12) — the FastAPI backend remains not publicly deployed.
-
-Accessibility improvements move toward WCAG 2.1 AA practices; formal certification has not been performed. See [`docs/accessibility-improvements.md`](docs/accessibility-improvements.md).
-
----
+Language selection is stored in a `lang` cookie and shared by server and client components. Patient language preference, chat sessions, and knowledge documents also support all three languages.
 
 ## Tech stack
 
-| Layer    | Technology                              |
-| -------- | --------------------------------------- |
-| UI       | React 18.3                              |
-| Language | TypeScript (strict)                     |
-| Bundler  | Vite 6                                  |
-| Routing  | react-router 7                          |
-| Forms    | react-hook-form + Zod                   |
-| HTTP     | Axios (Bearer + single-flight refresh)  |
-| Toasts   | sonner                                  |
-| Styling  | Tailwind CSS 4                          |
-| Charts   | Recharts                                |
-| Icons    | lucide-react                            |
-| Backend  | FastAPI + Uvicorn                       |
-| Auth     | pwdlib Argon2 + PyJWT + refresh cookies |
-| Database | MongoDB via PyMongo AsyncMongoClient    |
+- Next.js 16, React 19, TypeScript, and Tailwind CSS
+- Bun for package management, scripts, and tests
+- PostgreSQL with Drizzle ORM and Drizzle Kit; pgvector for optional embedding storage/search
+- S3-compatible object storage for medical reports
+- Zod request validation
 
----
+## Prerequisites
+
+- [Bun](https://bun.sh/) 1.3 or later
+- PostgreSQL database with pgvector (the project is configured for Neon-compatible pooled and direct URLs). Choose a region close to where the app runs: from Sri Lanka, a `us-east-2` database takes about 3.7 s to open a connection and 0.6 s per query, while `aws-ap-southeast-1` (Singapore) is much faster. The app keeps its connections open so that cost is paid once per server start, not on every page.
+- S3-compatible storage credentials if report uploads are required
 
 ## Local setup
 
-### Frontend
+1. Install dependencies:
 
-```bash
-npm install
-cp .env.example .env   # optional local overrides
-npm run dev
-```
+   ```bash
+   bun install
+   ```
 
-Open `http://localhost:5173/`.
+2. Copy the environment template and provide the required values:
 
-### Backend (Phases 4–6)
+   ```bash
+   cp .env.example .env
+   ```
 
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements-dev.txt
-copy .env.example .env
-# Set JWT_SECRET_KEY to a long random value (see backend/.env.example)
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
+   Required for the core app:
 
-- Health: `http://localhost:8000/health`
-- Detailed health: `http://localhost:8000/api/v1/health`
-- Auth: `/api/v1/auth/register`, `/login`, `/refresh`, `/logout`, `/me`
-- OpenAPI: `http://localhost:8000/docs`
+   - `DATABASE_URL` — direct PostgreSQL URL used by migrations
+   - `DATABASE_URL_POOLED` — pooled PostgreSQL URL used by the app
+   - `JWT_SECRET` and `JWT_REFRESH_SECRET` — strong, independent secrets
+   - `APP_URL` — normally `http://localhost:3000` locally
 
-See [`backend/README.md`](backend/README.md).
+   Optional integrations:
 
-**Local auth notes:** Frontend at `http://localhost:5173` must match `ALLOWED_ORIGINS`. Access tokens stay in memory; refresh uses an HttpOnly cookie. Production requires `COOKIE_SECURE=true` and a strong `JWT_SECRET_KEY` (never commit secrets).
+   - `DEEPSEEK_API_KEY` — educational answers. Deterministic safety redirects still work without it.
+   - `SERPER_API_KEY` — admin resource discovery.
+   - `GOOGLE_AI_API_KEY` — Gemini embeddings for hybrid (full-text + vector) RAG retrieval. English questions work with full-text search alone; Sinhala and Tamil questions effectively need it, because full-text search is English-only.
 
-**Still deferred:** password-reset email, email verification, MFA, production LLM enablement, Atlas Vector Search ops, medication/appointment SMS reminders. FastAPI backend is not publicly deployed.
+   Missing integrations show an unavailable/unknown state, not fabricated results. S3 variables are required for medical-report uploads.
 
-### Developer scripts (frontend)
+3. Apply database migrations:
 
-```bash
-npm run dev            # Vite dev server
-npm run build          # Production build
-npm run preview        # Preview production build
-npm run typecheck      # TypeScript project build check
-npm run lint           # ESLint
-npm run format         # Prettier write
-npm run format:check   # Prettier check
-npm run ci:build       # typecheck + lint + format:check + vite build
-npm run cf:dry-run     # Wrangler deploy dry-run (uses dist; no Vite)
-npm run cf:deploy      # Wrangler deploy --autoconfig=false
-```
+   ```bash
+   bunx drizzle-kit migrate
+   ```
 
-Environment variables (browser-safe `VITE_*` only) are documented in `.env.example` and read via `src/config/env.ts`.
+   Migration `0001_acoustic_malice.sql` adds Tamil (`ta`) to the shared PostgreSQL language enum.
+   Migration `0002_fuzzy_jocasta.sql` adds the moderated resource library and structured chat cards (the cards were later removed).
+   Migration `0003_opposite_titania.sql` adds doctor approval, resource revision numbers, and required MFA for new users. Existing users retain their current MFA requirement. Previously published resources return to pending until reviewed by a doctor.
+   Migration `0004_drop_appointments.sql` removes the unused appointments feature and its table.
+   Migration `0005_embedding_768_dims.sql` resizes the knowledge embedding column to Gemini's 768 dimensions (it was previously unused, so this is a no-data-loss change). If the column is still `vector(1536)`, every embedding write fails and RAG falls back to keyword search only; apply this migration, then run `bun run backfill:embeddings`.
+   Migration `0006_drop_diet.sql` drops the removed diet feature's columns (`patient_profiles.diet_instructions`, `chat_messages.ui_spec`). This deletes any saved diet instructions.
 
----
+4. Seed the first admin account:
 
-## Frontend routes
+   ```bash
+   SEED_ADMIN_EMAIL=admin@example.com \
+   SEED_ADMIN_PASSWORD='replace-with-a-strong-password' \
+   bun run seed:admin
+   ```
 
-### Public
+   For local role testing, create two development accounts for each role with:
 
-| URL          | Screen    |
-| ------------ | --------- |
-| `/`          | Landing   |
-| `/login`     | Login     |
-| `/register`  | Register  |
-| `/emergency` | Emergency |
+   ```bash
+   SEED_DEMO_PASSWORD='choose-a-development-password' bun run seed:demo
+   ```
 
-### Patient (authenticated)
+   The demo seed is idempotent and resets those demo accounts to the supplied password with MFA disabled.
 
-| URL            | Screen               |
-| -------------- | -------------------- |
-| `/dashboard`   | Dashboard            |
-| `/chat`        | AI Chat              |
-| `/medications` | Medication           |
-| `/diet`        | Diet                 |
-| `/symptoms`    | Symptoms             |
-| `/follow-ups`  | Follow-up            |
-| `/analytics`   | Progress / Analytics |
-| `/resources`   | Resources            |
-| `/profile`     | Profile              |
+5. Start the development server:
 
-### Admin (role `admin`, Phase 12)
+   ```bash
+   bun run dev
+   ```
 
-| URL                                                | Screen                    |
-| -------------------------------------------------- | ------------------------- |
-| `/admin/knowledge`                                 | Knowledge management list |
-| `/admin/knowledge/new`                             | New knowledge draft       |
-| `/admin/knowledge/:documentId`                     | Draft editor              |
-| `/admin/knowledge/:documentId/versions/:versionId` | Version detail            |
+Open [http://localhost:3000](http://localhost:3000).
 
-### Medical expert (role `medical_expert`, Phase 12)
+## Commands
 
-| URL                                      | Screen                                             |
-| ---------------------------------------- | -------------------------------------------------- |
-| `/medical-review`                        | Review queue                                       |
-| `/medical-review/:documentId/:versionId` | Review detail (approve / request changes / reject) |
+| Command | Purpose |
+| --- | --- |
+| `bun run dev` | Start the development server |
+| `bun run build` | Create a production build |
+| `bun run start` | Run the production server |
+| `bun run lint` | Run ESLint |
+| `bun run test` | Run the Bun test suite |
+| `bun run seed:admin` | Create the initial admin account |
+| `bun run seed:demo` | Create development accounts for every role |
+| `bun run cleanup:e2e` | Remove test data created by end-to-end runs |
+| `bun run backfill:embeddings` | Embed approved knowledge versions that have no embedding yet (added before `GOOGLE_AI_API_KEY`, or the approval-time call failed) |
 
-Only `medical_expert` can approve, request changes, reject, or restore; `admin` can author/submit drafts but cannot review. See [`docs/knowledge-governance-rbac.md`](docs/knowledge-governance-rbac.md).
+Some tests exercise the configured PostgreSQL database, so the test suite needs a reachable migrated database.
 
-### System
+## Demo accounts
 
-| URL             | Screen       |
-| --------------- | ------------ |
-| `/unauthorized` | Unauthorized |
-| unknown paths   | Not Found    |
+`bun run seed:demo` creates 6 development-only accounts, 2 per role. It is idempotent: rerunning it resets these same accounts to the password supplied in `SEED_DEMO_PASSWORD` rather than creating duplicates. The current local demo password is `ThyroCareDemo123!`. Never use this password or these accounts in production.
 
-Sign in / register call the FastAPI auth API. Access tokens are memory-only; refresh uses an HttpOnly cookie.
+| Role | Account 1 | Account 2 |
+| --- | --- | --- |
+| Admin | `admin.demo1@thyrocare.local` | `admin.demo2@thyrocare.local` |
+| Doctor | `doctor.demo1@thyrocare.local` — Dr. Anjali Perera, Endocrinology | `doctor.demo2@thyrocare.local` — Dr. Kavin Raj, Oncology |
+| Patient | `patient.demo1@thyrocare.local` — Meena Sivarajah, Tamil interface | `patient.demo2@thyrocare.local` — Nimali Jayasinghe, Sinhala interface |
 
----
+`patient.demo1` is assigned to `doctor.demo1`, and `patient.demo2` to `doctor.demo2`, so each demo doctor sees exactly one demo patient. Demo accounts deliberately skip mandatory MFA enrollment so role testing remains accessible. Use separate browser profiles or isolated contexts: normal tabs share authentication cookies.
 
-## Project structure
+These accounts, and every external credential in `.env` (database, S3-compatible storage, DeepSeek, Gemini, Serper), were verified working end to end on 28 September 2026: migrations applied cleanly to a fresh database, all 6 accounts signed in and reached their dashboards, and the full `bun run test` suite passed (55/55) against it.
 
-```
-backend/                   # FastAPI + Mongo + auth (Phases 4–6)
-src/
-  app/App.tsx              # Providers + RouterProvider shell
-  app/providers.tsx        # ErrorBoundary, Auth, Toast
-  app/router.tsx           # createBrowserRouter route table
-  config/env.ts            # Typed Vite env
-  services/api.ts          # Axios + Bearer + refresh interceptors
-  services/authService.ts  # Register/login/refresh/logout/me
-  services/tokenStore.ts   # In-memory access token
-  schemas/                 # Zod validation schemas
-  hooks/                   # useDocumentTitle, useToast
-  pages/                   # Lazy-loaded route pages
-  layouts/                 # Public, Auth, Dashboard (+ mobile drawer)
-  context/AuthContext.tsx  # Real auth provider (refresh bootstrap)
-  components/common/       # Guards, states, ErrorBoundary, UI atoms
-  data/mock/               # Explicit demo datasets (*.mock.ts)
-```
+## Account security and emergency contact details
 
----
+Registration requires the patient's phone number and optionally collects another emergency contact's name and number. New patients, doctor accounts, and seeded non-demo admins must enroll in MFA before their first full session. Scan the locally generated QR code using Google Authenticator or another TOTP authenticator, then verify a code. QR generation does not send the secret to Google or any external QR service. Setup tokens expire after five minutes and cannot be used as session tokens; sign in again if setup expires.
 
-## Roadmap (high level)
+Existing accounts keep their current enrollment policy after migration; existing enabled MFA remains enforced. There is no automated account-recovery flow for a lost authenticator yet, so establish a verified support/recovery procedure before production deployment.
 
-1. Modular frontend + routing ← done (Phases 1–2)
-2. Quality / accessibility foundation ← done (Phase 3)
-3. FastAPI backend foundation ← done (Phase 4)
-4. MongoDB models & repositories ← done (Phase 5)
-5. Secure authentication & RBAC ← done (Phase 6)
-6. Patient self-profile management ← **done (Phase 7)**
-7. Medication management & adherence ← **done (Phase 8)**
-8. Appointment / follow-up management ← **done (Phase 9)**
-9. Symptom tracking + safety escalation ← **done (Phase 10)**
-10. Safe knowledge-grounded assistant ← **done (Phase 11)**
-11. Admin / medical expert knowledge governance workflows ← **done (Phase 12)**
-12. Tests, security, Docker Compose, deployment docs (Phase 13+, not started)
+Emergency navigation and `/emergency` are patient-only. The page provides guidance and a direct `tel:1990` call link, not a dispatch service. An explicit "I'm having an emergency" toggle — not simply opening the page — requests optional browser geolocation and records an alert event that assigned doctors and admins can see, with a status control and a map link when location was shared. There is still no ambulance dispatch, driver notification, SMS delivery, or guaranteed-response mechanism: a saved alert confirms storage, not that someone has read or acted on it. Do not rely on this app to summon emergency services.
 
-See `PROJECT_PROGRESS.md` for phase tracking.
+## Chat and resource library
 
----
+Patient chat is at `/patient/chat`. Switching the interface language starts a fresh conversation in that language; saved conversations retain their original messages. Answers are brief, ask only necessary follow-up questions, and refuse programming/unrelated requests. Medical answers use approved knowledge — retrieved via full-text search, plus a Gemini vector-similarity pass when `GOOGLE_AI_API_KEY` is set — and the patient's own medication (including the next unlogged dose) and symptom records. Retrieval is not filtered by language; the model answers in the selected language. Embeddings are created when an article is approved; failures are logged to the server console and can be retried with `bun run backfill:embeddings`.
 
-## License / attributions
+There is no diet or food-check feature. Nutrition questions are answered only from approved knowledge articles.
 
-See `ATTRIBUTIONS.md` (shadcn/ui MIT; Unsplash imagery).
+Admins use `/admin/resources` to discover and save candidates. Doctors use `/doctor/resources` to review, edit, approve, or reject them. Publication requires both a doctor approval and an admin approval, in either order. Both roles can edit saved resources; edits clear both approvals and immediately hide the resource from patients. Admins can delete resources after confirmation. Revision checks reject stale edits or approvals. Reviewer views include pending/rejected content; the patient library and reader API only return fully approved entries in the selected language. Search results still require human verification of accuracy, relevance, and actual language.
+
+Doctors may also edit the body of admin-submitted knowledge while it is pending review. Saving does not approve it. A changed content hash invalidates stale approval attempts; approved knowledge remains immutable and needs a new version for further edits. When a doctor requests changes, the author can edit that same version and resubmit it directly back to review — a rejected version, by contrast, is a dead end and needs a fresh version.
+
+## Localization
+
+Translations live in `src/lib/i18n/dictionaries/`:
+
+- `en.json` — English
+- `si.json` — Sinhala
+- `ta.json` — Tamil
+
+Shared dashboard, chat, and library copy also lives in `src/lib/i18n/experience.ts`. Public authentication, symptom tiles, and review controls use `src/lib/i18n/interface.ts`. Both include English, Sinhala, and Tamil records. Public form language switches immediately and persists across reloads.
+
+The dictionaries intentionally share the same key set. `src/lib/i18n/config.test.ts` verifies this and confirms that Tamil is selectable. When adding another language:
+
+1. Add a complete dictionary.
+2. Register the language in `src/lib/i18n/config.ts`.
+3. Extend the PostgreSQL `language` enum with a migration.
+4. Update request validation for profile, chat, and knowledge APIs.
+
+## Safety and data boundaries
+
+- Patients cannot create or change medication plans; assigned doctors manage them.
+- Symptom escalation is deterministic and rule-based, not generated by AI. Free-text notes never influence the classification — only the structured yes/no answers do.
+- The assistant is limited to approved, active knowledge content plus the patient's own record, and is not allowed to diagnose or prescribe; it can state a dose already on record as fact but not recommend or change one.
+- Prompt checks and output checks provide defense in depth, not a guarantee of clinical correctness.
+- Search discovery is admin-only; the reader API returns approved resources only.
+- Protected routes are role-gated, and patient access is derived from the authenticated session.
+- Medical report objects are stored in a private bucket, never a public ACL, and are only ever accessed through short-lived signed URLs generated for the uploading patient or their assigned doctor(s).

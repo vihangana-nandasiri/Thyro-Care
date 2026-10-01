@@ -1,0 +1,1 @@
+export default function Loading(){return <div role="status" aria-label="Loading" className="p-8 space-y-5"><div className="h-7 w-48 rounded bg-slate-200"/><div className="h-40 rounded-2xl bg-slate-100"/><div className="h-20 rounded-2xl bg-slate-100"/></div>;}
